@@ -1,199 +1,660 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Selfstarters — a student-built platform for discovering clubs, teams and events at GDGSR Ben Guerir.">
-  <title>Selfstarters — Find your team</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selfstarters — Find your team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#142B4F;
+    --navy-2:#0D1E38;
+    --cream:#F6F3EA;
+    --paper:#FFFFFF;
+    --gold:#F2B705;
+    --coral:#E8543E;
+    --green:#2F8F5B;
+    --ink:#14161A;
+    --line:#DCD5C4;
+    --muted:#6B6456;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(20,43,79,0.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    line-height:0.95;
+    margin:0;
+  }
+  .mono{
+    font-family:'JetBrains Mono', monospace;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--coral);
+    font-weight:600;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  img,svg{display:block;}
+  button{font-family:inherit; cursor:pointer;}
+
+  /* ---------- NAV ---------- */
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:rgba(246,243,234,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid transparent;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  header.site.scrolled{
+    border-bottom-color:var(--line);
+    box-shadow:0 4px 20px rgba(20,43,79,0.06);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:76px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Anton', sans-serif; font-size:1.4rem;
+    text-transform:uppercase; letter-spacing:0.01em;
+  }
+  .logo .dot{
+    width:10px; height:10px; background:var(--coral); border-radius:50%;
+    box-shadow:0 0 0 4px rgba(232,84,62,0.15);
+  }
+  .nav-links{
+    display:flex; align-items:center; gap:34px;
+    list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    text-decoration:none; font-size:0.92rem; font-weight:600; color:var(--navy);
+    position:relative; padding:4px 0;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-2px; width:0; height:2px;
+    background:var(--coral); transition:width .2s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{display:flex; align-items:center; gap:12px;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:11px 20px; border-radius:999px; border:2px solid var(--navy);
+    font-weight:700; font-size:0.88rem; text-decoration:none;
+    background:transparent; color:var(--navy);
+    transition:transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-solid{background:var(--navy); color:var(--cream);}
+  .btn-solid:hover{box-shadow:0 8px 20px rgba(20,43,79,0.28);}
+  .btn-gold{background:var(--gold); border-color:var(--gold); color:var(--navy-2);}
+  .btn-gold:hover{box-shadow:0 8px 20px rgba(242,183,5,0.35);}
+  .btn-ghost-light{border-color:rgba(246,243,234,0.5); color:var(--cream);}
+  .btn-ghost-light:hover{background:rgba(246,243,234,0.12);}
+  .btn-sm{padding:8px 16px; font-size:0.78rem;}
+  .menu-toggle{display:none; background:none; border:none;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:var(--navy);
+    color:var(--cream);
+    position:relative;
+    overflow:hidden;
+    padding:96px 0 0;
+  }
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 85% 10%, rgba(242,183,5,0.16), transparent 45%),
+      radial-gradient(circle at 10% 90%, rgba(232,84,62,0.16), transparent 45%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
+    padding-bottom:70px;
+  }
+  .hero h1{
+    font-size:clamp(3rem, 6.4vw, 5.6rem);
+    margin-top:14px;
+  }
+  .hero h1 .hl{color:var(--gold);}
+  .hero p.sub{
+    font-size:1.12rem; color:rgba(246,243,234,0.78); max-width:480px;
+    margin:22px 0 34px; line-height:1.55;
+  }
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .stat-row{
+    display:flex; gap:36px; margin-top:56px; flex-wrap:wrap;
+  }
+  .stat{border-left:2px solid rgba(242,183,5,0.5); padding-left:14px;}
+  .stat .num{font-family:'JetBrains Mono', monospace; font-size:1.9rem; font-weight:700; color:var(--gold);}
+  .stat .lbl{font-size:0.76rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(246,243,234,0.6); margin-top:2px;}
+
+  /* hero visual: roster card stack */
+  .hero-visual{position:relative; height:420px;}
+  .float-card{
+    position:absolute; width:230px;
+    background:var(--paper); color:var(--ink); border-radius:12px;
+    padding:18px; box-shadow:0 20px 40px rgba(0,0,0,0.35);
+    transform:rotate(var(--r)); transition:transform .3s ease;
+  }
+  .float-card:hover{transform:rotate(0deg) translateY(-6px);}
+  .float-card .patch{
+    width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; margin-bottom:10px;
+  }
+  .float-card h4{font-family:'Anton'; text-transform:uppercase; font-size:1.05rem; margin:0 0 6px;}
+  .float-card p{font-size:0.76rem; color:var(--muted); margin:0; font-family:'JetBrains Mono', monospace;}
+  .fc1{top:0; left:20px; --r:-7deg; z-index:3;}
+  .fc2{top:120px; right:0; --r:6deg; z-index:2;}
+  .fc3{bottom:0; left:60px; --r:4deg; z-index:1;}
+
+  /* ticker */
+  .ticker{
+    position:relative; z-index:1;
+    border-top:1px solid rgba(246,243,234,0.15);
+    background:var(--navy-2);
+    overflow:hidden; padding:14px 0;
+  }
+  .ticker-track{
+    display:flex; gap:48px; white-space:nowrap;
+    animation:scroll-left 32s linear infinite;
+    width:max-content;
+  }
+  .ticker-track span{
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem; letter-spacing:0.05em;
+    color:rgba(246,243,234,0.55); text-transform:uppercase;
+  }
+  .ticker-track span b{color:var(--gold); font-weight:600;}
+  @keyframes scroll-left{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:100px 0;}
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    gap:24px; margin-bottom:44px; flex-wrap:wrap;
+  }
+  .section-head h2{font-size:clamp(2.1rem, 4vw, 3rem); color:var(--navy);}
+  .section-head .desc{max-width:420px; color:var(--muted); font-size:0.98rem; line-height:1.5;}
+
+  /* reveal animation */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---------- CLUB FILTERS ---------- */
+  .filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:36px;}
+  .chip{
+    padding:9px 18px; border-radius:999px; border:2px solid var(--line);
+    background:var(--paper); font-weight:600; font-size:0.84rem; color:var(--navy);
+    transition:all .18s ease;
+  }
+  .chip:hover{border-color:var(--navy);}
+  .chip.active{background:var(--navy); border-color:var(--navy); color:var(--cream);}
+
+  /* ---------- CLUB GRID / CARDS ---------- */
+  .club-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:22px;
+  }
+  .club-card{
+    background:var(--paper); border-radius:var(--radius); padding:24px;
+    border:1px solid var(--line); position:relative; overflow:hidden;
+    box-shadow:var(--shadow);
+    transition:transform .22s ease, box-shadow .22s ease;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .club-card:hover{transform:translateY(-6px); box-shadow:0 20px 40px rgba(20,43,79,0.14);}
+  .club-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:5px;
+    background:var(--accent, var(--coral));
+  }
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .patch{
+    width:42px; height:42px; border-radius:10px; background:var(--accent, var(--coral));
+    display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#fff;
+  }
+  .jersey{
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:1.3rem; color:var(--line);
+  }
+  .club-card h3{font-size:1.4rem; color:var(--navy);}
+  .club-card .cat{
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--accent, var(--coral)); font-weight:600;
+  }
+  .club-card p.desc{font-size:0.92rem; color:var(--muted); line-height:1.5; margin:0; flex-grow:1;}
+  .meta-row{display:flex; flex-direction:column; gap:6px; font-size:0.8rem; color:var(--navy); font-family:'JetBrains Mono', monospace;}
+  .spots-bar{height:6px; background:var(--line); border-radius:99px; overflow:hidden; margin-top:2px;}
+  .spots-bar i{display:block; height:100%; background:var(--green);}
+  .spots-bar.full i{background:var(--coral);}
+  .card-actions{display:flex; gap:10px; margin-top:4px;}
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(13,30,56,0.6); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--paper); border-radius:18px; max-width:560px; width:100%;
+    max-height:88vh; overflow-y:auto; padding:36px; position:relative;
+    animation:pop .28s ease;
+  }
+  @keyframes pop{ from{opacity:0; transform:scale(.94) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
+  .modal-close{
+    position:absolute; top:20px; right:20px; width:34px; height:34px; border-radius:50%;
+    border:1px solid var(--line); background:var(--cream); font-size:1.1rem; color:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal .patch{margin-bottom:14px;}
+  .modal h3{font-size:1.9rem; color:var(--navy); margin-bottom:4px;}
+  .modal .cat{margin-bottom:16px; display:block;}
+  .modal .full-desc{color:var(--muted); font-size:0.96rem; line-height:1.6; margin-bottom:20px;}
+  .modal .meta-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px;
+    padding:16px; background:var(--cream); border-radius:10px;
+  }
+  .modal .meta-grid div .k{font-family:'JetBrains Mono', monospace; font-size:0.68rem; text-transform:uppercase; color:var(--muted); letter-spacing:.06em;}
+  .modal .meta-grid div .v{font-weight:600; color:var(--navy); font-size:0.9rem; margin-top:2px;}
+
+  form.apply-form{display:flex; flex-direction:column; gap:14px;}
+  form.apply-form label{font-size:0.82rem; font-weight:700; color:var(--navy); display:flex; flex-direction:column; gap:6px;}
+  form.apply-form input, form.apply-form select, form.apply-form textarea{
+    font-family:'Work Sans'; font-size:0.94rem; padding:11px 14px; border-radius:8px;
+    border:1.5px solid var(--line); background:var(--cream); color:var(--ink);
+  }
+  form.apply-form input:focus, form.apply-form select:focus, form.apply-form textarea:focus{
+    outline:2px solid var(--navy); outline-offset:1px; background:var(--paper);
+  }
+  form.apply-form textarea{resize:vertical; min-height:80px;}
+  .form-note{font-size:0.76rem; color:var(--muted); margin-top:-4px;}
+  .success-box{text-align:center; padding:20px 0;}
+  .success-box .icon{width:56px; height:56px; border-radius:50%; background:var(--green); color:#fff; font-size:1.6rem; display:flex; align-items:center; justify-content:center; margin:0 auto 18px;}
+  .success-box h3{margin-bottom:8px;}
+  .success-box p{color:var(--muted); font-size:0.92rem; line-height:1.5;}
+
+  /* ---------- EVENTS ---------- */
+  .events-tabs{display:flex; gap:8px; margin-bottom:32px;}
+  .tab-btn{
+    padding:10px 20px; border-radius:8px; border:none; background:transparent;
+    font-weight:700; font-size:0.9rem; color:var(--muted);
+    border-bottom:3px solid transparent;
+  }
+  .tab-btn.active{color:var(--navy); border-bottom-color:var(--coral);}
+  .events-list{display:flex; flex-direction:column; gap:14px;}
+  .event-row{
+    display:grid; grid-template-columns:90px 1fr auto; gap:22px; align-items:center;
+    background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:18px 22px;
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .event-row:hover{box-shadow:var(--shadow); transform:translateX(4px);}
+  .date-block{
+    text-align:center; font-family:'JetBrains Mono', monospace; background:var(--navy);
+    color:var(--cream); border-radius:8px; padding:10px 6px;
+  }
+  .date-block .day{font-size:1.5rem; font-weight:700; line-height:1;}
+  .date-block .mon{font-size:0.68rem; text-transform:uppercase; letter-spacing:.08em; opacity:.75;}
+  .event-info h4{font-family:'Anton'; text-transform:uppercase; font-size:1.15rem; color:var(--navy); margin-bottom:4px;}
+  .event-info .tags{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .tag-pill{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; text-transform:uppercase;
+    padding:3px 10px; border-radius:99px; background:var(--cream); color:var(--navy);
+    border:1px solid var(--line);
+  }
+  .event-info .where{font-size:0.84rem; color:var(--muted); margin-top:6px;}
+  .rsvp-btn{
+    padding:10px 18px; border-radius:999px; border:2px solid var(--navy); background:transparent;
+    font-weight:700; font-size:0.82rem; color:var(--navy); white-space:nowrap;
+    transition:all .18s ease;
+  }
+  .rsvp-btn.going{background:var(--green); border-color:var(--green); color:#fff;}
+  .attendee-count{font-size:0.72rem; color:var(--muted); text-align:right; margin-top:6px; font-family:'JetBrains Mono', monospace;}
+  .past .event-row{opacity:0.6;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .how{background:var(--navy); color:var(--cream);}
+  .how .section-head h2{color:var(--cream);}
+  .how .section-head .desc{color:rgba(246,243,234,0.65);}
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .step{
+    background:rgba(246,243,234,0.06); border:1px solid rgba(246,243,234,0.14);
+    border-radius:14px; padding:28px; position:relative;
+  }
+  .step .num{
+    font-family:'JetBrains Mono', monospace; font-size:0.85rem; color:var(--gold); font-weight:700;
+    margin-bottom:16px; display:block;
+  }
+  .step h3{font-size:1.3rem; margin-bottom:10px;}
+  .step p{font-size:0.9rem; color:rgba(246,243,234,0.65); line-height:1.55; margin:0;}
+
+  /* ---------- START A CLUB CTA ---------- */
+  .start-cta{
+    background:linear-gradient(135deg, var(--gold), #F7CC3E);
+    border-radius:20px; padding:56px; display:flex; justify-content:space-between; align-items:center; gap:30px; flex-wrap:wrap;
+    color:var(--navy-2);
+  }
+  .start-cta h2{font-size:clamp(1.8rem,3.4vw,2.6rem); max-width:480px; color:var(--navy-2);}
+  .start-cta p{max-width:420px; font-size:0.96rem; margin-top:12px; color:rgba(13,30,56,0.75);}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--navy-2); color:rgba(246,243,234,0.6); padding:56px 0 30px;}
+  .footer-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px; margin-bottom:40px;}
+  .footer-grid .logo{color:var(--cream);}
+  .footer-grid p{max-width:280px; font-size:0.86rem; line-height:1.5; margin-top:12px;}
+  .footer-links{display:flex; gap:60px; flex-wrap:wrap;}
+  .footer-links h5{font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:14px;}
+  .footer-links ul{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px;}
+  .footer-links a{text-decoration:none; font-size:0.86rem; color:rgba(246,243,234,0.65);}
+  .footer-links a:hover{color:var(--cream);}
+  .footer-bottom{border-top:1px solid rgba(246,243,234,0.12); padding-top:22px; font-size:0.78rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-visual{display:none;}
+    .steps{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .menu-toggle{display:block;}
+    .event-row{grid-template-columns:70px 1fr; }
+    .rsvp-btn{grid-column:1/-1; margin-top:8px; justify-self:start;}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px;}
+    section{padding:70px 0;}
+    .stat-row{gap:22px;}
+    .start-cta{padding:34px 24px;}
+    .modal{padding:24px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  :focus-visible{outline:3px solid var(--coral); outline-offset:2px;}
+</style>
 </head>
 <body>
+
 <header class="site" id="siteHeader">
   <nav class="wrap">
-    <a class="logo" href="#top" aria-label="Selfstarters home"><span class="dot"></span><span id="siteName">Selfstarters</span></a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+    <div class="logo"><span class="dot"></span>Selfstarters</div>
     <ul class="nav-links">
       <li><a href="#clubs">Clubs</a></li>
       <li><a href="#events">Events</a></li>
       <li><a href="#how">How it works</a></li>
-      <li><a href="#contact">Contact</a></li>
     </ul>
-    <div class="nav-cta" id="navGuest">
-      <button class="btn btn-sm" id="navLoginBtn">Log in</button>
-      <a href="#clubs" class="btn btn-solid btn-sm">Join now</a>
-    </div>
-    <div class="nav-user" id="navUserBox" style="display:none">
-      <div class="avatar" id="navAvatar">S</div>
-      <div><span class="who" id="navUserName">Student</span><span class="role-tag" id="navUserRole">Student</span></div>
-      <button class="btn btn-sm" id="navLogoutBtn">Log out</button>
+    <div class="nav-cta">
+      <a href="#start" class="btn btn-sm">Start a club</a>
+      <div class="auth-nav" id="navGuest">
+        <button id="navLoginBtn" class="btn btn-solid btn-sm" type="button">Log in</button>
+      </div>
+      <div class="nav-user-box" id="navUserBox">
+        <div class="nav-avatar" id="navAvatar">S</div>
+        <div class="nav-user-text"><span class="nav-user-name" id="navUserName">Student</span><span class="nav-user-role" id="navUserRole">Student</span></div>
+        <button id="navLogoutBtn" class="btn btn-sm" type="button">Log out</button>
+      </div>
     </div>
   </nav>
 </header>
 
-<main id="top">
-  <section class="hero">
-    <div class="wrap hero-grid">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Built by a student at GDGSR Ben Guerir</span>
+      <h1>Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
+      <p class="sub">Selfstarters is where GDGSR Ben Guerir students go to see every team worth joining in one place — tech, math, chess, sports, and everything in between — and actually apply, not just wonder.</p>
+      <div class="hero-actions">
+        <a href="#clubs" class="btn btn-gold">Browse open teams</a>
+        <a href="#events" class="btn btn-ghost-light">See upcoming events</a>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="statClubs">0</div><div class="lbl">Active teams</div></div>
+        <div class="stat"><div class="num" id="statSpots">0</div><div class="lbl">Open spots</div></div>
+        <div class="stat"><div class="num" id="statEvents">0</div><div class="lbl">Events this month</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="float-card fc1">
+        <div class="patch" style="background:#E8543E;">◆</div>
+        <h4>Code &amp; Robotics</h4>
+        <p>18/25 filled · Tue/Thu</p>
+      </div>
+      <div class="float-card fc2">
+        <div class="patch" style="background:#142B4F;">♞</div>
+        <h4>Chess Club</h4>
+        <p>20/30 filled · Thu</p>
+      </div>
+      <div class="float-card fc3">
+        <div class="patch" style="background:#2F8F5B;">●</div>
+        <h4>Varsity Soccer</h4>
+        <p>Tryouts open · Daily</p>
+      </div>
+    </div>
+  </div>
+  <div class="ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</section>
+
+<section id="clubs">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Every team,<br>one roster.</h2>
+      <p class="desc">Filter by what you're into. Every card shows exactly how many spots are open, when they meet, and lets you apply on the spot.</p>
+    </div>
+    <div class="filters reveal" id="filters"></div>
+    <div class="club-grid" id="clubGrid"></div>
+  </div>
+</section>
+
+<section id="events" style="background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Events portal</h2>
+      <p class="desc">Scrimmages, tournaments, competitions, and info sessions — RSVP so clubs know who's coming.</p>
+    </div>
+    <div class="events-tabs reveal">
+      <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
+      <button class="tab-btn" data-tab="past">Past</button>
+    </div>
+    <div class="events-list reveal" id="eventsList"></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>How joining<br>actually works</h2>
+      <p class="desc">No mystery sign-up sheets taped to a door. Three steps, all online.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <span class="num">01 / BROWSE</span>
+        <h3>Find a team that fits</h3>
+        <p>Filter by category, check meeting times against your schedule, and see how many spots are actually left before you commit.</p>
+      </div>
+      <div class="step">
+        <span class="num">02 / APPLY</span>
+        <h3>Tell them why you're in</h3>
+        <p>A short form goes straight to the club's student lead — your name, grade, and a couple sentences on why you want in.</p>
+      </div>
+      <div class="step">
+        <span class="num">03 / SHOW UP</span>
+        <h3>Get confirmed &amp; go</h3>
+        <p>The lead follows up with next steps — tryout, intro meeting, or just "see you Tuesday." Then you're on the roster.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="start-cta reveal">
       <div>
-        <span class="eyebrow">Built by a student at GDGSR Ben Guerir</span>
-        <h1>Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
-        <p class="sub">Selfstarters puts student opportunities in one place — tech, math, chess, sports, arts, competitions and more — so students can discover them, apply and show up.</p>
-        <div class="hero-actions">
-          <a href="#clubs" class="btn btn-gold">Browse open teams</a>
-          <a href="#events" class="btn btn-ghost-light">See upcoming events</a>
-        </div>
-        <div class="stat-row">
-          <div class="stat"><div class="num" id="statClubs">0</div><div class="lbl">Active teams</div></div>
-          <div class="stat"><div class="num" id="statSpots">0</div><div class="lbl">Open spots</div></div>
-          <div class="stat"><div class="num" id="statEvents">0</div><div class="lbl">Upcoming events</div></div>
-        </div>
+        <span class="eyebrow" style="color:var(--navy-2);">Don't see your thing?</span>
+        <h2>Start your own club at GDGSR Ben Guerir.</h2>
+        <p>If you've got five people and an idea, Selfstarters will list it, run applications for it, and put your first meeting on the events portal.</p>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="float-card fc1"><div class="patch" style="background:#E8543E;">◆</div><h4>Tech &amp; Robotics</h4><p>Discover · Apply · Build</p></div>
-        <div class="float-card fc2"><div class="patch" style="background:#142B4F;">♞</div><h4>Chess Club</h4><p>Play · Compete · Improve</p></div>
-        <div class="float-card fc3"><div class="patch" style="background:#2F8F5B;">●</div><h4>Sports Teams</h4><p>Tryouts · Training · Matches</p></div>
-      </div>
+      <a href="mailto:hello@selfstarters.club" class="btn btn-solid">Pitch a new club</a>
     </div>
-    <div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
-  </section>
+  </div>
+</section>
 
-  <section id="clubs">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <h2>Every team,<br>one roster.</h2>
-        <p class="desc">Browse opportunities, filter by category and see meeting times and available places. Applying requires an account so student submissions stay connected to the right person.</p>
+<section class="pitch-contact" id="contact">
+  <div class="wrap">
+    <div class="pitch-grid">
+      <div class="form-card" id="pitchFormBox">
+        <h3>Pitch a new club</h3>
+        <p>Have an idea? Send it to the Selfstarters admin team for review.</p>
+        <form id="pitchForm" class="stack-form">
+          <label>Club name<input id="pitchName" required></label>
+          <label>Category<select id="pitchCategory" required><option value="">Choose</option><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option></select></label>
+          <label>Description<textarea id="pitchDesc" required></textarea></label>
+          <button class="btn btn-solid" type="submit">Send club pitch</button>
+        </form>
       </div>
-      <div class="filters reveal" id="filters"></div>
-      <div class="club-grid" id="clubGrid"><p class="empty-note">Loading teams…</p></div>
-    </div>
-  </section>
-
-  <section id="events" style="background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <h2>Events portal</h2>
-        <p class="desc">Scrimmages, tournaments, workshops, competitions and club meetings. Browse publicly; RSVP after logging in.</p>
-      </div>
-      <div class="events-tabs reveal">
-        <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
-        <button class="tab-btn" data-tab="past">Past</button>
-      </div>
-      <div class="events-list reveal" id="eventsList"><p class="empty-note">Loading events…</p></div>
-    </div>
-  </section>
-
-  <section class="how" id="how">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <h2>How joining<br>actually works</h2>
-        <p class="desc">Guests can explore everything. An account is only needed when you want to participate.</p>
-      </div>
-      <div class="steps reveal">
-        <div class="step"><span class="num">01 / BROWSE</span><h3>Find something that fits</h3><p>Filter clubs, check schedules, read details and see which opportunities still have room.</p></div>
-        <div class="step"><span class="num">02 / SIGN IN</span><h3>Create your student account</h3><p>Use your email to create an account with your name and grade. Guests are never forced to log in just to browse.</p></div>
-        <div class="step"><span class="num">03 / PARTICIPATE</span><h3>Apply, RSVP &amp; contribute</h3><p>Apply to teams, RSVP to events, review clubs, pitch a new club or contact Selfstarters.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="founder">
-    <div class="wrap">
-      <div class="section-head reveal"><h2>Built by<br>a student.</h2><p class="desc">Selfstarters is meant to make opportunities easier to find and easier to act on inside the school community.</p></div>
-      <div class="founder-block reveal">
-        <div class="founder-avatar">IH</div>
-        <div><h3 id="siteFounder">Ilyass Hachadi</h3><span class="role">Founder · GDGSR Ben Guerir</span><p>Selfstarters is a student-built community platform created to connect students with clubs, teams, events and new ideas.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="start">
-    <div class="wrap">
-      <div class="section-head reveal"><h2>Start<br>something.</h2><p class="desc">Have an idea that is missing from the list? Send a club pitch and an admin can review it from the dashboard.</p></div>
-      <div class="contact-card reveal" id="pitchFormBox">
-        <form class="stack-form" id="pitchForm">
-          <label>Proposed club name<input id="pitchName" required maxlength="80" placeholder="e.g. AI &amp; Machine Learning Club"></label>
-          <label>Category<select id="pitchCategory" required><option value="">Choose one</option><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option><option>Other</option></select></label>
-          <label>What would the club do?<textarea id="pitchDesc" required maxlength="1000" placeholder="Tell us what students would do, when you would meet and who it is for."></textarea></label>
-          <span class="form-note">Submitting a pitch requires an account. An admin reviews pitches before anything becomes public.</span>
-          <button type="submit" class="btn btn-solid">Submit club pitch</button>
+      <div class="form-card" id="contactFormBox">
+        <h3>Contact Selfstarters</h3>
+        <p>Questions, suggestions, or something we should fix? Send us a message.</p>
+        <form id="contactForm" class="stack-form">
+          <label>Message<textarea id="contactMessage" required placeholder="Write your message..."></textarea></label>
+          <button class="btn btn-solid" type="submit">Send message</button>
         </form>
       </div>
     </div>
-  </section>
-
-  <section id="contact" style="background:var(--paper);border-top:1px solid var(--line);">
-    <div class="wrap">
-      <div class="contact-shell">
-        <div class="contact-info reveal">
-          <span class="eyebrow">Get in touch</span>
-          <h2>Contact<br>Selfstarters.</h2>
-          <p>Questions, corrections, partnership ideas or feedback are welcome. Contact submissions require an account so we can reply to a real student.</p>
-          <p class="mono" style="margin-top:18px;">Founder: <strong id="siteFounderSmall">Ilyass Hachadi</strong><br>School: <strong id="siteSchool">GDGSR Ben Guerir</strong></p>
-          <p class="mono">Email: <strong id="siteContactEmail">hello@selfstarters.club</strong></p>
-        </div>
-        <div class="contact-card reveal" id="contactFormBox">
-          <form class="stack-form" id="contactForm">
-            <label>Message<textarea id="contactMessage" required maxlength="2000" placeholder="How can we help?"></textarea></label>
-            <span class="form-note">Your name and account email will be attached automatically.</span>
-            <button type="submit" class="btn btn-solid">Send message</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+  </div>
+</section>
 
 <footer>
   <div class="wrap">
     <div class="footer-grid">
-      <div><div class="logo"><span class="dot"></span>Selfstarters</div><p>A student-built platform for discovering, joining and creating opportunities at GDGSR Ben Guerir.</p></div>
+      <div>
+        <div class="logo"><span class="dot"></span>Selfstarters</div>
+        <p>A student-built platform for finding, joining, and running clubs at GDGSR Ben Guerir. No teachers required to get started.</p>
+      </div>
       <div class="footer-links">
-        <div><h5>Explore</h5><ul><li><a href="#clubs">All teams</a></li><li><a href="#events">Events portal</a></li><li><a href="#how">How it works</a></li></ul></div>
-        <div><h5>Community</h5><ul><li><a href="#start">Start a club</a></li><li><a href="#contact">Contact</a></li></ul></div>
-        <div><h5>About</h5><ul><li><a href="#founder">Founder</a></li><li><span class="mono">GDGSR Ben Guerir</span></li></ul></div>
+        <div>
+          <h5>Explore</h5>
+          <ul><li><a href="#clubs">All teams</a></li><li><a href="#events">Events portal</a></li><li><a href="#how">How it works</a></li></ul>
+        </div>
+        <div>
+          <h5>For clubs</h5>
+          <ul><li><a href="#start">Start a club</a></li><li><a href="mailto:hello@selfstarters.club">Post an event</a></li></ul>
+        </div>
+        <div>
+          <h5>Contact</h5>
+          <ul><li><a href="mailto:hello@selfstarters.club">hello@selfstarters.club</a></li><li><a href="#">@selfstarters</a></li></ul>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom"><span>© 2026 Selfstarters · Built by Ilyass Hachadi</span><span class="mono">v1.0</span></div>
+    <div class="footer-bottom">
+      <span>© 2026 Selfstarters. Built by Ilyass Hachadi, a student at GDGSR Ben Guerir.</span>
+      <span class="mono">v1.0</span>
+    </div>
   </div>
 </footer>
 
-<!-- Club details / application / reviews -->
-<div class="modal-overlay" id="clubOverlay" aria-hidden="true"><div class="modal" id="clubModalContent"></div></div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
 
-<!-- Login / signup -->
-<div class="modal-overlay" id="authOverlay" aria-hidden="true">
-  <div class="modal modal-narrow">
-    <button class="modal-close" id="authClose" aria-label="Close">✕</button>
-    <div class="eyebrow" style="margin-bottom:8px;">Selfstarters account</div>
-    <h3 style="margin-bottom:16px;">Join the community</h3>
-    <div class="gate-note">You can browse clubs and events as a guest. Log in only when you want to apply, RSVP, review, pitch an idea or contact us.</div>
+<div class="modal-overlay" id="clubOverlay">
+  <div class="modal" id="clubModalContent"></div>
+</div>
+
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal auth-modal">
+    <button class="modal-close" id="authClose" type="button">✕</button>
+    <div class="auth-brand">SELFSTARTERS</div>
+    <h3>Join the community</h3>
+    <p class="auth-sub">Browse as a guest. Sign in when you want to join, RSVP, review, pitch a club, or contact us.</p>
     <div class="auth-tabs">
-      <button class="auth-tab active" data-panel="loginPanel">Log in</button>
-      <button class="auth-tab" data-panel="signupPanel">Create account</button>
+      <button class="auth-tab active" data-panel="loginPanel" type="button">Log in</button>
+      <button class="auth-tab" data-panel="signupPanel" type="button">Create account</button>
     </div>
-    <div class="form-error" id="authError"></div>
+    <div class="auth-error" id="authError"></div>
     <div class="auth-panel active" id="loginPanel">
-      <form class="stack-form" id="loginForm">
+      <form id="loginForm" class="stack-form">
         <label>Email<input id="loginEmail" type="email" autocomplete="email" required></label>
         <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
-        <button class="btn btn-solid btn-block" type="submit">Log in</button>
-        <button class="btn btn-sm" type="button" id="forgotPasswordBtn">Forgot password?</button>
+        <button class="btn btn-solid" type="submit">Log in</button>
       </form>
     </div>
     <div class="auth-panel" id="signupPanel">
-      <form class="stack-form" id="signupForm">
-        <label>Full name<input id="signupName" autocomplete="name" required maxlength="80"></label>
-        <label>Grade<select id="signupGrade" required><option value="">Select grade</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select></label>
+      <form id="signupForm" class="stack-form">
+        <label>Full name<input id="signupName" type="text" autocomplete="name" required></label>
+        <label>Grade
+          <select id="signupGrade" required>
+            <option value="">Select grade</option>
+            <option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+          </select>
+        </label>
         <label>Email<input id="signupEmail" type="email" autocomplete="email" required></label>
-        <label>Password<input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required></label>
-        <button class="btn btn-solid btn-block" type="submit">Create account</button>
+        <label>Password<input id="signupPassword" type="password" minlength="6" autocomplete="new-password" required></label>
+        <button class="btn btn-solid" type="submit">Create account</button>
       </form>
     </div>
   </div>
 </div>
 
+<style>
+  .auth-modal{max-width:470px;}
+  .auth-brand{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--coral);font-weight:700;margin-bottom:8px;}
+  .auth-modal h3{margin-bottom:8px;}
+  .auth-sub{color:var(--muted);line-height:1.5;font-size:.9rem;margin:0 0 20px;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--line);}
+  .auth-tab{border:0;background:transparent;padding:10px 12px;color:var(--muted);font-weight:700;border-bottom:3px solid transparent;}
+  .auth-tab.active{color:var(--navy);border-bottom-color:var(--coral);}
+  .auth-panel{display:none;}
+  .auth-panel.active{display:block;}
+  .auth-error{display:none;background:#fff0ed;color:#a52f1f;border:1px solid #f0b0a5;border-radius:8px;padding:10px 12px;font-size:.85rem;margin-bottom:14px;}
+  .auth-error.show{display:block;}
+  .stack-form{display:flex;flex-direction:column;gap:13px;}
+  .stack-form label{font-size:.82rem;font-weight:700;color:var(--navy);display:flex;flex-direction:column;gap:6px;}
+  .stack-form input,.stack-form select,.stack-form textarea{font-family:'Work Sans';font-size:.94rem;padding:11px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink);}
+  .stack-form textarea{resize:vertical;min-height:90px;}
+  .stack-form input:focus,.stack-form select:focus,.stack-form textarea:focus{outline:2px solid var(--navy);outline-offset:1px;background:var(--paper);}
+  .reviews-block{margin-top:30px;border-top:1px solid var(--line);padding-top:24px;}
+  .reviews-block h4{font-family:'Anton';text-transform:uppercase;color:var(--navy);font-size:1.2rem;margin:0 0 14px;}
+  .review-item{border-top:1px solid var(--line);padding:12px 0;}
+  .review-head{display:flex;justify-content:space-between;gap:10px;}
+  .review-head .name{font-weight:700;color:var(--navy);}
+  .stars{letter-spacing:2px;}
+  .star-input{display:flex;gap:4px;}
+  .star-input button{border:0;background:none;color:var(--line);font-size:1.5rem;padding:0;}
+  .star-input button.on{color:var(--gold);}
+  .auth-nav{display:flex;align-items:center;gap:8px;}
+  .nav-user-box{display:none;align-items:center;gap:8px;}
+  .nav-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);color:var(--cream);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;}
+  .nav-user-text{display:flex;flex-direction:column;line-height:1.05;}
+  .nav-user-name{font-size:.78rem;font-weight:700;color:var(--navy);}
+  .nav-user-role{font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .pitch-contact{padding-top:0;}
+  .pitch-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .form-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow);}
+  .form-card h3{font-size:1.3rem;color:var(--navy);margin-bottom:8px;}
+  .form-card p{color:var(--muted);font-size:.9rem;line-height:1.5;}
+  @media(max-width:700px){.pitch-grid{grid-template-columns:1fr}.nav-user-text{display:none}.nav-cta .btn{padding:8px 11px;font-size:.7rem}}
+</style>
+
+<script type="module" src="./auth.js"></script>
 <script type="module" src="./app.js"></script>
+
 </body>
 </html>
