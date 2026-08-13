@@ -21,25 +21,25 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyB_vY8jcmPT9YQ_VqTI-nP4VVGLknRMfd4",
+  authDomain: "selfstarters-6cf59.firebaseapp.com",
+  projectId: "selfstarters-6cf59",
+  storageBucket: "selfstarters-6cf59.firebasestorage.app",
+  messagingSenderId: "682501966902",
+  appId: "1:682501966902:web:2d11672d5b27882a445c97"
 };
 
 // Anyone who signs up/logs in with one of these emails automatically
 // becomes an admin (can open admin.html and manage the whole site).
 export const ADMIN_EMAILS = [
-  "ilyass@example.com"   // <-- replace with the founder's real email
+  "selfstarters.admin@gmail.com"   // <-- replace with the founder's real email
 ];
 
 export const SITE = {
   name: "Selfstarters",
   school: "GDGSR Ben Guerir",
   founder: "Ilyass Hachadi",
-  contactEmail: "hello@selfstarters.club"
+  contactEmail: "selfstarters.admin@gmail.com"
 };
 
 export const app = initializeApp(firebaseConfig);
