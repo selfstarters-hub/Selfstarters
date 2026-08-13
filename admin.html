@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Selfstarters — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="gate" class="gate-screen"><h2>Checking admin access…</h2><p>Please wait while Selfstarters verifies your account.</p></div>
+<div id="adminApp" class="admin-shell" style="display:none">
+  <aside class="admin-sidebar">
+    <div class="logo"><span class="dot"></span>Selfstarters</div>
+    <button class="admin-nav-btn active" data-panel="dashboard">▦ Dashboard</button>
+    <button class="admin-nav-btn" data-panel="clubs">◆ Clubs</button>
+    <button class="admin-nav-btn" data-panel="events">◷ Events</button>
+    <button class="admin-nav-btn" data-panel="applications">✓ Applications</button>
+    <button class="admin-nav-btn" data-panel="pitches">＋ Club pitches</button>
+    <button class="admin-nav-btn" data-panel="messages">✉ Messages</button>
+    <button class="admin-nav-btn" data-panel="reviews">★ Reviews</button>
+    <button class="admin-nav-btn" data-panel="users">♙ Users</button>
+    <div class="spacer"></div>
+    <a class="admin-nav-btn" href="./index.html">← Public site</a>
+    <button class="admin-nav-btn" id="adminLogout">Log out</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header"><div><span class="eyebrow">Control center</span><h1 id="panelTitle">Dashboard</h1></div><div class="small-muted" id="adminIdentity"></div></div>
+
+    <section class="admin-panel active" id="panel-dashboard">
+      <div class="admin-stat-grid">
+        <div class="admin-stat"><div class="num" id="countClubs">0</div><div class="lbl">Clubs</div></div>
+        <div class="admin-stat"><div class="num" id="countEvents">0</div><div class="lbl">Events</div></div>
+        <div class="admin-stat"><div class="num" id="countApplications">0</div><div class="lbl">Applications</div></div>
+        <div class="admin-stat"><div class="num" id="countUsers">0</div><div class="lbl">Users</div></div>
+      </div>
+      <div class="admin-card"><h3>How you control Selfstarters</h3><p class="small-muted">Use Clubs and Events to control what appears publicly. Applications and pitches are the student submissions waiting for your decision. Messages and reviews can be moderated here. Users shows the Firestore student profiles; deleting a profile does not delete its Firebase Authentication account.</p></div>
+    </section>
+
+    <section class="admin-panel" id="panel-clubs">
+      <div class="admin-toolbar"><h3>Clubs</h3><button class="btn btn-solid" id="newClubBtn">+ Add club</button></div>
+      <div class="admin-card" id="clubEditor" style="display:none"></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Category</th><th>Meeting</th><th>Roster</th><th>Actions</th></tr></thead><tbody id="clubsTable"></tbody></table></div>
+    </section>
+
+    <section class="admin-panel" id="panel-events">
+      <div class="admin-toolbar"><h3>Events</h3><button class="btn btn-solid" id="newEventBtn">+ Add event</button></div>
+      <div class="admin-card" id="eventEditor" style="display:none"></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Event</th><th>Date</th><th>Club</th><th>RSVPs</th><th>Actions</th></tr></thead><tbody id="eventsTable"></tbody></table></div>
+    </section>
+
+    <section class="admin-panel" id="panel-applications"><div class="admin-toolbar"><h3>Applications</h3></div><div class="table-wrap"><table class="admin-table"><thead><tr><th>Student</th><th>Club</th><th>Grade</th><th>Status</th><th>Reason</th><th>Actions</th></tr></thead><tbody id="applicationsTable"></tbody></table></div></section>
+    <section class="admin-panel" id="panel-pitches"><div class="admin-toolbar"><h3>Club pitches</h3></div><div class="table-wrap"><table class="admin-table"><thead><tr><th>Student</th><th>Proposal</th><th>Category</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead><tbody id="pitchesTable"></tbody></table></div></section>
+    <section class="admin-panel" id="panel-messages"><div class="admin-toolbar"><h3>Contact messages</h3></div><div class="table-wrap"><table class="admin-table"><thead><tr><th>Student</th><th>Email</th><th>Message</th><th>Sent</th><th>Actions</th></tr></thead><tbody id="messagesTable"></tbody></table></div></section>
+    <section class="admin-panel" id="panel-reviews"><div class="admin-toolbar"><h3>Reviews</h3></div><div class="table-wrap"><table class="admin-table"><thead><tr><th>Club</th><th>Student</th><th>Rating</th><th>Review</th><th>Actions</th></tr></thead><tbody id="reviewsTable"></tbody></table></div></section>
+    <section class="admin-panel" id="panel-users"><div class="admin-toolbar"><h3>Student profiles</h3></div><div class="admin-card"><p class="small-muted">These are the Firestore profiles connected to Firebase Authentication. Authentication accounts themselves should be deleted from Firebase Console/Admin SDK; this dashboard only manages the profile records.</p></div><div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Grade</th><th>Role</th><th>Created</th></tr></thead><tbody id="usersTable"></tbody></table></div></section>
+  </main>
+</div>
+<script type="module" src="./admin.js"></script>
+</body>
+</html>

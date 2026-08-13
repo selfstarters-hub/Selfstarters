@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Selfstarters — a student-built platform for discovering clubs, teams and events at GDGSR Ben Guerir.">
+  <title>Selfstarters — Find your team</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="site" id="siteHeader">
+  <nav class="wrap">
+    <a class="logo" href="#top" aria-label="Selfstarters home"><span class="dot"></span><span id="siteName">Selfstarters</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="#clubs">Clubs</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta" id="navGuest">
+      <button class="btn btn-sm" id="navLoginBtn">Log in</button>
+      <a href="#clubs" class="btn btn-solid btn-sm">Join now</a>
+    </div>
+    <div class="nav-user" id="navUserBox" style="display:none">
+      <div class="avatar" id="navAvatar">S</div>
+      <div><span class="who" id="navUserName">Student</span><span class="role-tag" id="navUserRole">Student</span></div>
+      <button class="btn btn-sm" id="navLogoutBtn">Log out</button>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Built by a student at GDGSR Ben Guerir</span>
+        <h1>Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
+        <p class="sub">Selfstarters puts student opportunities in one place — tech, math, chess, sports, arts, competitions and more — so students can discover them, apply and show up.</p>
+        <div class="hero-actions">
+          <a href="#clubs" class="btn btn-gold">Browse open teams</a>
+          <a href="#events" class="btn btn-ghost-light">See upcoming events</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num" id="statClubs">0</div><div class="lbl">Active teams</div></div>
+          <div class="stat"><div class="num" id="statSpots">0</div><div class="lbl">Open spots</div></div>
+          <div class="stat"><div class="num" id="statEvents">0</div><div class="lbl">Upcoming events</div></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="float-card fc1"><div class="patch" style="background:#E8543E;">◆</div><h4>Tech &amp; Robotics</h4><p>Discover · Apply · Build</p></div>
+        <div class="float-card fc2"><div class="patch" style="background:#142B4F;">♞</div><h4>Chess Club</h4><p>Play · Compete · Improve</p></div>
+        <div class="float-card fc3"><div class="patch" style="background:#2F8F5B;">●</div><h4>Sports Teams</h4><p>Tryouts · Training · Matches</p></div>
+      </div>
+    </div>
+    <div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+  </section>
+
+  <section id="clubs">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Every team,<br>one roster.</h2>
+        <p class="desc">Browse opportunities, filter by category and see meeting times and available places. Applying requires an account so student submissions stay connected to the right person.</p>
+      </div>
+      <div class="filters reveal" id="filters"></div>
+      <div class="club-grid" id="clubGrid"><p class="empty-note">Loading teams…</p></div>
+    </div>
+  </section>
+
+  <section id="events" style="background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Events portal</h2>
+        <p class="desc">Scrimmages, tournaments, workshops, competitions and club meetings. Browse publicly; RSVP after logging in.</p>
+      </div>
+      <div class="events-tabs reveal">
+        <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
+        <button class="tab-btn" data-tab="past">Past</button>
+      </div>
+      <div class="events-list reveal" id="eventsList"><p class="empty-note">Loading events…</p></div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>How joining<br>actually works</h2>
+        <p class="desc">Guests can explore everything. An account is only needed when you want to participate.</p>
+      </div>
+      <div class="steps reveal">
+        <div class="step"><span class="num">01 / BROWSE</span><h3>Find something that fits</h3><p>Filter clubs, check schedules, read details and see which opportunities still have room.</p></div>
+        <div class="step"><span class="num">02 / SIGN IN</span><h3>Create your student account</h3><p>Use your email to create an account with your name and grade. Guests are never forced to log in just to browse.</p></div>
+        <div class="step"><span class="num">03 / PARTICIPATE</span><h3>Apply, RSVP &amp; contribute</h3><p>Apply to teams, RSVP to events, review clubs, pitch a new club or contact Selfstarters.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="founder">
+    <div class="wrap">
+      <div class="section-head reveal"><h2>Built by<br>a student.</h2><p class="desc">Selfstarters is meant to make opportunities easier to find and easier to act on inside the school community.</p></div>
+      <div class="founder-block reveal">
+        <div class="founder-avatar">IH</div>
+        <div><h3 id="siteFounder">Ilyass Hachadi</h3><span class="role">Founder · GDGSR Ben Guerir</span><p>Selfstarters is a student-built community platform created to connect students with clubs, teams, events and new ideas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap">
+      <div class="section-head reveal"><h2>Start<br>something.</h2><p class="desc">Have an idea that is missing from the list? Send a club pitch and an admin can review it from the dashboard.</p></div>
+      <div class="contact-card reveal" id="pitchFormBox">
+        <form class="stack-form" id="pitchForm">
+          <label>Proposed club name<input id="pitchName" required maxlength="80" placeholder="e.g. AI &amp; Machine Learning Club"></label>
+          <label>Category<select id="pitchCategory" required><option value="">Choose one</option><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option><option>Other</option></select></label>
+          <label>What would the club do?<textarea id="pitchDesc" required maxlength="1000" placeholder="Tell us what students would do, when you would meet and who it is for."></textarea></label>
+          <span class="form-note">Submitting a pitch requires an account. An admin reviews pitches before anything becomes public.</span>
+          <button type="submit" class="btn btn-solid">Submit club pitch</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="background:var(--paper);border-top:1px solid var(--line);">
+    <div class="wrap">
+      <div class="contact-shell">
+        <div class="contact-info reveal">
+          <span class="eyebrow">Get in touch</span>
+          <h2>Contact<br>Selfstarters.</h2>
+          <p>Questions, corrections, partnership ideas or feedback are welcome. Contact submissions require an account so we can reply to a real student.</p>
+          <p class="mono" style="margin-top:18px;">Founder: <strong id="siteFounderSmall">Ilyass Hachadi</strong><br>School: <strong id="siteSchool">GDGSR Ben Guerir</strong></p>
+          <p class="mono">Email: <strong id="siteContactEmail">hello@selfstarters.club</strong></p>
+        </div>
+        <div class="contact-card reveal" id="contactFormBox">
+          <form class="stack-form" id="contactForm">
+            <label>Message<textarea id="contactMessage" required maxlength="2000" placeholder="How can we help?"></textarea></label>
+            <span class="form-note">Your name and account email will be attached automatically.</span>
+            <button type="submit" class="btn btn-solid">Send message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div><div class="logo"><span class="dot"></span>Selfstarters</div><p>A student-built platform for discovering, joining and creating opportunities at GDGSR Ben Guerir.</p></div>
+      <div class="footer-links">
+        <div><h5>Explore</h5><ul><li><a href="#clubs">All teams</a></li><li><a href="#events">Events portal</a></li><li><a href="#how">How it works</a></li></ul></div>
+        <div><h5>Community</h5><ul><li><a href="#start">Start a club</a></li><li><a href="#contact">Contact</a></li></ul></div>
+        <div><h5>About</h5><ul><li><a href="#founder">Founder</a></li><li><span class="mono">GDGSR Ben Guerir</span></li></ul></div>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Selfstarters · Built by Ilyass Hachadi</span><span class="mono">v1.0</span></div>
+  </div>
+</footer>
+
+<!-- Club details / application / reviews -->
+<div class="modal-overlay" id="clubOverlay" aria-hidden="true"><div class="modal" id="clubModalContent"></div></div>
+
+<!-- Login / signup -->
+<div class="modal-overlay" id="authOverlay" aria-hidden="true">
+  <div class="modal modal-narrow">
+    <button class="modal-close" id="authClose" aria-label="Close">✕</button>
+    <div class="eyebrow" style="margin-bottom:8px;">Selfstarters account</div>
+    <h3 style="margin-bottom:16px;">Join the community</h3>
+    <div class="gate-note">You can browse clubs and events as a guest. Log in only when you want to apply, RSVP, review, pitch an idea or contact us.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-panel="loginPanel">Log in</button>
+      <button class="auth-tab" data-panel="signupPanel">Create account</button>
+    </div>
+    <div class="form-error" id="authError"></div>
+    <div class="auth-panel active" id="loginPanel">
+      <form class="stack-form" id="loginForm">
+        <label>Email<input id="loginEmail" type="email" autocomplete="email" required></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <button class="btn btn-solid btn-block" type="submit">Log in</button>
+        <button class="btn btn-sm" type="button" id="forgotPasswordBtn">Forgot password?</button>
+      </form>
+    </div>
+    <div class="auth-panel" id="signupPanel">
+      <form class="stack-form" id="signupForm">
+        <label>Full name<input id="signupName" autocomplete="name" required maxlength="80"></label>
+        <label>Grade<select id="signupGrade" required><option value="">Select grade</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select></label>
+        <label>Email<input id="signupEmail" type="email" autocomplete="email" required></label>
+        <label>Password<input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+        <button class="btn btn-solid btn-block" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
