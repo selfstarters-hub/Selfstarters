@@ -91,7 +91,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 import { db } from './firebase-init.js';
 import { onReady, doSignOut, sendResetEmail } from './auth.js';
 import {
-  collectionGroup, query, where, getDocs
+  collection, doc, getDocs, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $=id=>document.getElementById(id);
@@ -105,42 +105,28 @@ async function loadProfile(user,profile){
   $('avatar').textContent=initials(profile?.name||user.displayName||user.email);
   $('name').textContent=profile?.name || user.displayName || 'Student';
   $('roleLine').textContent=profile?.role==='admin'?'Administrator':`Grade ${profile?.grade || '—'}`;
-
   $('infoName').textContent=profile?.name || user.displayName || 'Student';
   $('infoEmail').textContent=user.email || profile?.email || '—';
   $('infoGrade').textContent=profile?.grade || '—';
   $('infoRole').textContent=profile?.role==='admin'?'Administrator':'Student';
 
-  const q=query(collectionGroup(db,'members'),where('userId','==',user.uid));
-  const snap=await getDocs(q);
+  const clubsSnap = await getDocs(collection(db,'clubs'));
+  const rows = [];
+  await Promise.all(clubsSnap.docs.map(async clubDoc => {
+    const memberSnap = await getDoc(doc(db,'clubs',clubDoc.id,'members',user.uid));
+    if(memberSnap.exists()) rows.push({id:clubDoc.id,club:clubDoc.data(),member:memberSnap.data()});
+  }));
+  rows.sort((a,b)=>String(a.club.name||'').localeCompare(String(b.club.name||'')));
 
-  if(snap.empty){
+  if(!rows.length){
     $('clubsList').innerHTML='<div class="empty">You are not a member of any clubs yet.<br><br><a class="btn solid" href="./clubs.html">Explore clubs</a></div>';
     return;
   }
-
-  const rows=[];
-  for(const d of snap.docs){
-    const clubId=d.ref.parent.parent.id;
-    try{
-      const {getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const c=await getDoc(doc(db,'clubs',clubId));
-      if(c.exists()) rows.push({id:clubId,club:c.data(),member:d.data()});
-    }catch(e){console.error(e)}
-  }
-
   $('clubsList').innerHTML=rows.map(x=>`
     <div class="club">
-      <div class="clubMain">
-        <div class="clubName">${esc(x.club.name||'Club')}</div>
-        <span class="clubRole">${esc(x.member.role||'Member')}</span>
-        <div class="small">${esc(x.club.category||'Other')} · ${esc(x.club.meets||'Meeting TBD')}</div>
-      </div>
-      <div class="clubActions">
-        <a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a>
-      </div>
-    </div>
-  `).join('');
+      <div class="clubMain"><div class="clubName">${esc(x.club.name||'Club')}</div><span class="clubRole">${esc(x.member.role||'Member')}</span><div class="small">${esc(x.club.category||'Other')} · ${esc(x.club.meets||'Meeting TBD')}</div></div>
+      <div class="clubActions"><a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a></div>
+    </div>`).join('');
 }
 
 onReady(async(user,profile)=>{
