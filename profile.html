@@ -67,10 +67,34 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 </section>
 
 <section class="panel">
-<h2>Change name</h2>
-<form id="nameForm" class="editForm">
-<div class="field"><label for="newName">Display name</label><input id="newName" maxlength="60" required></div>
-<div class="formActions"><button class="btn solid" type="submit">Save name</button></div>
+<h2>Edit profile</h2>
+<p class="small">Update your name and grade. Your email is linked to your Firebase account.</p>
+<form id="profileForm" class="editForm">
+<div class="field">
+<label for="newName">Name</label>
+<input id="newName" type="text" maxlength="60" autocomplete="name" required>
+</div>
+<div class="field">
+<label for="newGrade">Grade</label>
+<select id="newGrade" required>
+<option value="">Select your grade</option>
+<option value="7">Grade 7</option>
+<option value="8">Grade 8</option>
+<option value="9">Grade 9</option>
+<option value="10">Grade 10</option>
+<option value="11">Grade 11</option>
+<option value="12">Grade 12</option>
+<option value="College">College</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="field">
+<label>Email</label>
+<div id="editEmail" class="small">—</div>
+</div>
+<div class="formActions">
+<button class="btn solid" id="saveProfileBtn" type="submit">Save changes</button>
+</div>
 </form>
 </section>
 
@@ -157,6 +181,8 @@ async function loadProfile(user,profile){
   $('infoGrade').textContent=data.grade||'—';
   $('infoRole').textContent=data.role==='admin'?'Administrator':'Student';
   $('newName').value=displayName;
+  $('newGrade').value=String(data.grade||'');
+  $('editEmail').textContent=user.email||data.email||'—';
 
   await loadClubs(user);
 }
@@ -168,20 +194,42 @@ onReady(async(user,profile)=>{
   $('auth').innerHTML=`<a class="mono" href="./profile.html">${esc(displayName)}</a>`;
   $('logoutBtn').onclick=()=>doSignOut();
 
-  $('nameForm').addEventListener('submit',async e=>{
+  $('profileForm').addEventListener('submit',async e=>{
     e.preventDefault();
+
     const newName=$('newName').value.trim();
-    if(!newName)return;
+    const newGrade=$('newGrade').value;
+    const btn=$('saveProfileBtn');
+
+    if(!newName || !newGrade){
+      showMessage('Please enter your name and select your grade.',true);
+      return;
+    }
+
+    btn.disabled=true;
+    btn.textContent='Saving...';
+
     try{
       await updateAuthProfile(user,{displayName:newName});
-      await setDoc(doc(db,'users',user.uid),{name:newName},{merge:true});
+      await setDoc(doc(db,'users',user.uid),{
+        name:newName,
+        grade:newGrade,
+        email:user.email||''
+      },{merge:true});
+
       $('name').textContent=newName;
       $('infoName').textContent=newName;
+      $('infoGrade').textContent=newGrade;
       $('avatar').textContent=initials(newName);
-      showMessage('Your name was updated.');
+      $('roleLine').textContent=`Grade ${newGrade}`;
+
+      showMessage('Profile updated successfully.');
     }catch(err){
       console.error(err);
-      showMessage('Could not update your name. Please try again.',true);
+      showMessage('Could not save your profile. Check the browser console for the Firebase error.',true);
+    }finally{
+      btn.disabled=false;
+      btn.textContent='Save changes';
     }
   });
 
