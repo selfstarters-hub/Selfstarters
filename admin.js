@@ -172,33 +172,51 @@ async function approvePitch(id){
 
 async function migrateOldApprovedClubPitches(){
   try{
-    const accepted = state.pitches.filter(p => p.status === 'accepted' && p.userId && !p.clubId);
+    const accepted = state.pitches.filter(p =>
+      p.status === 'accepted' && p.userId
+    );
     if(!accepted.length) return;
 
     for(const p of accepted){
-      const match = state.clubs.find(c =>
-        String(c.name||'').trim().toLowerCase() === String(p.clubName||'').trim().toLowerCase()
-      );
-      if(!match || match.founderId) continue;
+      let club = null;
 
-      await updateDoc(doc(db,'clubs',match.id),{
-        founderId:p.userId,
-        filled:Math.max(1,Number(match.filled)||0),
-        updatedAt:serverTimestamp()
-      });
+      if(p.clubId){
+        club = state.clubs.find(c => c.id === p.clubId) || null;
+      }
 
-      await setDoc(doc(db,'clubs',match.id,'members',p.userId),{
-        userId:p.userId,
-        name:p.name||'Student',
-        email:p.email||'',
-        role:'Founder',
-        joinedAt:serverTimestamp()
-      });
+      if(!club){
+        club = state.clubs.find(c =>
+          String(c.name||'').trim().toLowerCase() ===
+          String(p.clubName||'').trim().toLowerCase()
+        ) || null;
+      }
 
-      await updateDoc(doc(db,'clubPitches',p.id),{
-        clubId:match.id,
-        migratedAt:serverTimestamp()
-      });
+      if(!club) continue;
+
+      // Only repair missing founder information. Never overwrite an
+      // already assigned founder.
+      if(!club.founderId){
+        await updateDoc(doc(db,'clubs',club.id),{
+          founderId:p.userId,
+          filled:Math.max(1,Number(club.filled)||0),
+          updatedAt:serverTimestamp()
+        });
+
+        await setDoc(doc(db,'clubs',club.id,'members',p.userId),{
+          userId:p.userId,
+          name:p.name||'Student',
+          email:p.email||'',
+          role:'Founder',
+          joinedAt:serverTimestamp()
+        });
+
+        if(!p.clubId){
+          await updateDoc(doc(db,'clubPitches',p.id),{
+            clubId:club.id,
+            migratedAt:serverTimestamp()
+          });
+        }
+      }
     }
   }catch(e){
     console.error('Old club founder migration failed:',e);

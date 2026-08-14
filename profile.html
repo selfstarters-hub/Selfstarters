@@ -117,7 +117,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 import { auth, db } from './firebase-init.js';
 import { onReady, doSignOut } from './auth.js';
 import { updateProfile as updateAuthProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -129,56 +129,85 @@ function showMessage(text,error=false){
 }
 
 async function loadClubs(user){
-  /*
-    We intentionally do not use collectionGroup().
-    We first read the clubs collection, then read only the current user's
-    member document inside each club.
-  */
-  const clubsSnap=await getDocs(collection(db,'clubs'));
-  const rows=[];
-  for(const clubDoc of clubsSnap.docs){
-    try{
-      const clubData=clubDoc.data();
-      const memberSnap=await getDoc(doc(db,'clubs',clubDoc.id,'members',user.uid));
+  const wrap=$('clubsList');
+  if(!wrap) return;
 
-      if(memberSnap.exists()){
-        rows.push({id:clubDoc.id,club:clubData,member:memberSnap.data()});
-      } else if(clubData.founderId === user.uid){
+  try{
+    const clubsSnap=await getDocs(collection(db,'clubs'));
+
+    // Also look for this user's old club pitch records. This lets us
+    // recognize clubs created before founderId was introduced.
+    let oldFounderClubIds=new Set();
+    try{
+      const pitchSnap=await getDocs(
+        query(collection(db,'clubPitches'),where('userId','==',user.uid))
+      );
+      pitchSnap.forEach(d=>{
+        const p=d.data();
+        if(p.status==='accepted' && p.clubId) oldFounderClubIds.add(p.clubId);
+      });
+    }catch(e){
+      console.warn('Could not check old club pitches:',e);
+    }
+
+    const rows=[];
+
+    for(const clubDoc of clubsSnap.docs){
+      const club=clubDoc.data();
+      let member=null;
+
+      try{
+        const memberSnap=await getDoc(
+          doc(db,'clubs',clubDoc.id,'members',user.uid)
+        );
+        if(memberSnap.exists()) member=memberSnap.data();
+      }catch(e){
+        console.warn('Could not read membership:',clubDoc.id,e);
+      }
+
+      const isFounder =
+        club.founderId===user.uid ||
+        oldFounderClubIds.has(clubDoc.id) ||
+        member?.role==='Founder';
+
+      if(member || isFounder){
         rows.push({
           id:clubDoc.id,
-          club:clubData,
-          member:{
+          club,
+          member:member || {
             userId:user.uid,
             role:'Founder',
-            name:user.displayName||profile?.name||'Founder'
-          }
+            name:user.displayName||currentProfile?.name||'Founder'
+          },
+          isFounder
         });
       }
-    }catch(err){
-      console.warn('Could not read membership for club '+clubDoc.id,err);
     }
-  }
 
-  rows.sort((a,b)=>String(a.club.name||'').localeCompare(String(b.club.name||'')));
+    if(!rows.length){
+      wrap.innerHTML='<div class="empty">You are not a member of any clubs yet.</div>';
+      return;
+    }
 
-  if(!rows.length){
-    $('clubsList').innerHTML='<div class="empty">You are not a member of any clubs yet.<br><br><a class="btn solid" href="./clubs.html">Explore clubs</a></div>';
-    return;
-  }
-
-  $('clubsList').innerHTML=rows.map(x=>`
-    <div class="club">
-      <div>
-        <div class="clubName">${esc(x.club.name||'Club')}</div>
-        <span class="clubRole">${esc(x.club.founderId===user.uid?'Founder':(x.member.role||'Member'))}</span>
-        <div class="small">${esc(x.club.category||'Other')} · ${esc(x.club.meets||'Meeting TBD')}</div>
+    wrap.innerHTML=rows.map(x=>`
+      <div class="club-card">
+        <div class="club-main">
+          <div class="club-title">${esc(x.club.name||'Club')}</div>
+          <div class="small">${esc(x.club.category||'Other')}</div>
+          <span class="clubRole">${esc(x.isFounder?'Founder':(x.member.role||'Member'))}</span>
+        </div>
+        <div class="club-actions">
+          <a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a>
+          ${x.isFounder
+            ? `<a class="btn" href="./club-manage.html?id=${encodeURIComponent(x.id)}">Manage</a>`
+            : ''}
+        </div>
       </div>
-      <div class="clubActions">
-        <a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a>
-        ${x.club.founderId===user.uid?`<a class="btn" href="./club-manage.html?id=${encodeURIComponent(x.id)}">Manage</a>`:''}
-      </div>
-    </div>
-  `).join('');
+    `).join('');
+  }catch(err){
+    console.error(err);
+    wrap.innerHTML='<div class="error">Could not load your clubs. Check the browser console for details.</div>';
+  }
 }
 
 async function loadProfile(user,profile){
