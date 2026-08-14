@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Selfstarters — Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#142B4F;--cream:#F6F3EA;--white:#fff;--gold:#F2B705;--coral:#E8543E;--green:#2F8F5B;--line:#DCD5C4;--muted:#6B6456;--ink:#14161A}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}
+a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}.wrap{max-width:1180px;margin:auto;padding:0 28px}
+h1,h2,h3{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;line-height:.95;margin:0}.mono{font-family:"JetBrains Mono",monospace}
+header{position:sticky;top:0;z-index:20;background:#f6f3eadd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font:400 1.45rem Anton;text-transform:uppercase}
+.dot{display:inline-block;width:10px;height:10px;background:var(--coral);border-radius:50%;margin-right:8px}
+.links{display:flex;gap:25px;list-style:none;font:600 .72rem "JetBrains Mono";text-transform:uppercase}
+.auth{display:flex;gap:8px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+.btn:disabled{opacity:.55;cursor:not-allowed}.solid{background:var(--navy);color:#fff;border-color:var(--navy)}.gold{background:var(--gold);border-color:var(--gold)}.danger{background:#fff3f1;color:#a22;border-color:#e0aaa2}
+.hero{background:var(--navy);color:#fff;padding:70px 0}.heroGrid{display:grid;grid-template-columns:1.6fr .8fr;gap:40px;align-items:end}
+.eyebrow{font:600 .72rem "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.hero h1{font-size:clamp(3.2rem,8vw,7rem);margin:12px 0}.hero p{max-width:700px;color:#dce4ee;line-height:1.6}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#ffffff18;font:600 .65rem "JetBrains Mono";text-transform:uppercase}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.content{padding:50px 0 90px}
+.layout{display:grid;grid-template-columns:1.6fr .8fr;gap:22px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:2rem;margin-bottom:15px}.panel p{color:var(--muted);line-height:1.65}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{border:1px solid var(--line);padding:16px;border-radius:10px}.stat b{font:700 1.5rem "JetBrains Mono"}.stat span{display:block;color:var(--muted);font-size:.75rem;margin-top:4px}
+.member{display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid var(--line);padding:14px 0}.member:first-child{border-top:0}.memberInfo{min-width:0}.memberName{font-weight:800}.memberEmail{font-size:.78rem;color:var(--muted);margin-top:3px}.role{font:600 .63rem "JetBrains Mono";text-transform:uppercase;background:#eef2f7;color:var(--navy);padding:6px 8px;border-radius:999px;white-space:nowrap}
+.memberTools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.roleSelect{padding:8px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:.8rem}
+.form{display:grid;gap:10px}.field{display:grid;gap:6px}.field label{font:600 .68rem "JetBrains Mono";text-transform:uppercase}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:110px;resize:vertical}
+.notice{padding:12px;background:#fff8df;border:1px solid #ecd77e;border-radius:8px;color:#6d5700;font-size:.85rem;line-height:1.5}.success{background:#edf8f1;border-color:#b8ddc5;color:#24663e}.error{background:#fff1ef;border-color:#e3b3ab;color:#8f3024}
+.loading{text-align:center;padding:100px;color:var(--muted)}.hidden{display:none!important}.small{font-size:.78rem;color:var(--muted)}.divider{height:1px;background:var(--line);margin:18px 0}
+@media(max-width:800px){.heroGrid,.layout{grid-template-columns:1fr}.links{display:none}.stats{grid-template-columns:1fr}.wrap{padding:0 18px}.member{align-items:flex-start;flex-direction:column}.memberTools{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header>
+<nav class="wrap">
+<a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
+<ul class="links">
+<li><a href="./index.html">Home</a></li><li><a href="./clubs.html">Clubs</a></li><li><a href="./events.html">Events</a></li><li><a href="./about.html">About</a></li>
+</ul>
+<div id="auth" class="auth"></div>
+</nav>
+</header>
+
+<div id="loading" class="loading">Loading club...</div>
+
+<section id="page" class="hidden">
+<section class="hero">
+<div class="wrap heroGrid">
+<div>
+<div id="category" class="eyebrow"></div>
+<h1 id="name">Club</h1>
+<p id="desc"></p>
+<div class="actions">
+<button id="joinBtn" class="btn gold">Join club</button>
+<button id="leaveBtn" class="btn danger hidden">Leave club</button>
+<a href="./clubs.html" class="btn">Back to clubs</a>
+</div>
+</div>
+<div>
+<span id="status" class="badge">OPEN</span>
+<p class="mono" id="meeting"></p>
+<p class="mono" id="location"></p>
+</div>
+</div>
+</section>
+
+<main class="content wrap">
+<div class="layout">
+<div>
+<section class="panel">
+<h2>About the club</h2>
+<p id="full"></p>
+</section>
+
+<section class="panel">
+<h2>Club stats</h2>
+<div class="stats">
+<div class="stat"><b id="memberCount">0</b><span>Members</span></div>
+<div class="stat"><b id="capacity">0</b><span>Capacity</span></div>
+<div class="stat"><b id="spots">0</b><span>Open spots</span></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Members</h2>
+<div id="membersList"><p class="small">Loading members...</p></div>
+</section>
+</div>
+
+<aside>
+<section class="panel">
+<h2>Your membership</h2>
+<div id="membership"><p class="small">Log in to see your membership status.</p></div>
+</section>
+
+<section class="panel">
+<h2>Information</h2>
+<p><b>Category:</b> <span id="sideCat"></span></p>
+<p><b>Meeting:</b> <span id="sideMeet"></span></p>
+<p><b>Location:</b> <span id="sideLoc"></span></p>
+<p><b>Club number:</b> <span id="sideNum"></span></p>
+</section>
+
+<section id="ownerPanel" class="panel hidden">
+<h2>Founder tools</h2>
+<p class="small">You are the founder. You can manage member roles and transfer ownership.</p>
+<div id="ownerMessage" class="notice hidden"></div>
+<div class="divider"></div>
+<form id="editClubForm" class="form">
+<div class="field"><label>Club description</label><textarea id="editFull"></textarea></div>
+<div class="field"><label>Meeting</label><input id="editMeeting"></div>
+<div class="field"><label>Location</label><input id="editLocation"></div>
+<button class="btn solid" type="submit">Save club information</button>
+</form>
+<div class="divider"></div>
+<div class="field"><label>Transfer founder role</label><select id="transferSelect"><option value="">Select a member...</option></select></div>
+<button id="transferBtn" class="btn danger" type="button">Transfer ownership</button>
+</section>
+</aside>
+</div>
+</main>
+</section>
+
+<script type="module">
+import { db } from './firebase-init.js';
+import { onReady, doSignOut } from './auth.js';
+import {
+  doc, getDoc, collection, onSnapshot, query, orderBy,
+  runTransaction, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const clubId = new URLSearchParams(location.search).get('id');
+let club = null, user = null, profile = null, members = [];
+
+const $ = id => document.getElementById(id);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[m]));
+
+function setMessage(text, type=''){
+  const el = $('ownerMessage');
+  if(!text){ el.className='notice hidden'; el.textContent=''; return; }
+  el.className='notice '+type;
+  el.textContent=text;
+}
+
+function isFounder(){
+  return !!(user && club && club.founderId === user.uid);
+}
+
+function renderAuth(){
+  if(!user){
+    $('auth').innerHTML='<a class="btn solid" href="./index.html#login">Log in</a>';
+    return;
+  }
+  $('auth').innerHTML=`<span class="mono">${esc(profile?.name || user.email)}</span><button class="btn" id="logout">Log out</button>`;
+  $('logout').onclick=()=>doSignOut();
+}
+
+function renderClub(){
+  const total = Number(club.total) || 0;
+  const count = members.length;
+  const spots = total ? Math.max(0,total-count) : 999999;
+  const full = total > 0 && count >= total;
+
+  $('category').textContent = (club.category || 'Other') + ' club';
+  $('name').textContent = club.name || 'Club';
+  $('desc').textContent = club.desc || '';
+  $('full').textContent = club.full || club.desc || 'No full description yet.';
+  $('meeting').textContent = 'MEETS · ' + (club.meets || 'TBD');
+  $('location').textContent = 'LOCATION · ' + (club.room || 'TBD');
+  $('sideCat').textContent = club.category || 'Other';
+  $('sideMeet').textContent = club.meets || 'TBD';
+  $('sideLoc').textContent = club.room || 'TBD';
+  $('sideNum').textContent = club.number || '00';
+
+  $('memberCount').textContent = count;
+  $('capacity').textContent = total || '—';
+  $('spots').textContent = total ? spots : '∞';
+  $('status').textContent = full ? 'FULL' : 'OPEN';
+
+  if(user){
+    const me = members.find(m => m.id === user.uid);
+    if(me){
+      $('joinBtn').classList.add('hidden');
+      $('leaveBtn').classList.remove('hidden');
+      $('membership').innerHTML =
+        `<p>You are a <strong>${esc(me.role || 'Member')}</strong> of this club.</p>`;
+    }else{
+      $('joinBtn').classList.remove('hidden');
+      $('leaveBtn').classList.add('hidden');
+      $('membership').innerHTML='<p>You are not a member of this club.</p>';
+    }
+    $('joinBtn').disabled = full && !me;
+  }else{
+    $('joinBtn').classList.remove('hidden');
+    $('leaveBtn').classList.add('hidden');
+    $('joinBtn').disabled = false;
+    $('membership').innerHTML='<p>Log in to join this club.</p>';
+  }
+
+  renderMembers();
+  renderOwner();
+}
+
+function renderMembers(){
+  if(!members.length){
+    $('membersList').innerHTML='<p class="small">No members yet.</p>';
+    return;
+  }
+
+  $('membersList').innerHTML = members.map(m => {
+    const founder = m.id === club.founderId;
+    const canManage = isFounder() && !founder && m.id !== user?.uid;
+    const roles = ['Member','Vice President','Developer','Special','Secretary','Treasurer','Officer'];
+
+    return `<div class="member">
+      <div class="memberInfo">
+        <div class="memberName">${esc(m.name || 'Student')}${founder?' · Founder':''}</div>
+        <div class="memberEmail">${esc(m.email || '')}</div>
+      </div>
+      <div class="memberTools">
+        <span class="role">${esc(founder?'Founder':(m.role||'Member'))}</span>
+        ${canManage ? `
+          <select class="roleSelect" data-role-user="${esc(m.id)}">
+            ${roles.map(r=>`<option ${r===(m.role||'Member')?'selected':''}>${esc(r)}</option>`).join('')}
+          </select>
+          <button class="btn" data-save-role="${esc(m.id)}">Save</button>
+          <button class="btn danger" data-remove-member="${esc(m.id)}">Remove</button>
+        ` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('[data-save-role]').forEach(btn=>{
+    btn.onclick=async()=>{
+      const uid=btn.dataset.saveRole;
+      const select=document.querySelector(`[data-role-user="${CSS.escape(uid)}"]`);
+      try{
+        await updateDoc(doc(db,'clubs',clubId,'members',uid),{
+          role:select.value, updatedAt:serverTimestamp()
+        });
+        setMessage('Member role updated.','success');
+      }catch(e){console.error(e);setMessage('Could not update the member role.','error');}
+    };
+  });
+
+  document.querySelectorAll('[data-remove-member]').forEach(btn=>{
+    btn.onclick=async()=>{
+      if(!confirm('Remove this member from the club?')) return;
+      const uid=btn.dataset.removeMember;
+      try{
+        await runTransaction(db,async tx=>{
+          const clubRef=doc(db,'clubs',clubId);
+          const memberRef=doc(db,'clubs',clubId,'members',uid);
+          const c=await tx.get(clubRef);
+          if(!c.exists()) throw new Error('Club not found');
+          const oldFilled=Number(c.data().filled)||0;
+          tx.delete(memberRef);
+          tx.update(clubRef,{filled:Math.max(0,oldFilled-1)});
+        });
+        setMessage('Member removed.','success');
+      }catch(e){console.error(e);setMessage('Could not remove the member.','error');}
+    };
+  });
+}
+
+function renderOwner(){
+  if(!isFounder()){
+    $('ownerPanel').classList.add('hidden');
+    return;
+  }
+  $('ownerPanel').classList.remove('hidden');
+  $('editFull').value=club.full || club.desc || '';
+  $('editMeeting').value=club.meets || '';
+  $('editLocation').value=club.room || '';
+
+  const options=members.filter(m=>m.id!==user.uid);
+  $('transferSelect').innerHTML='<option value="">Select a member...</option>'+
+    options.map(m=>`<option value="${esc(m.id)}">${esc(m.name||m.email||m.id)}</option>`).join('');
+}
+
+async function joinClub(){
+  if(!user){ location.href='./index.html#login'; return; }
+
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,'clubs',clubId);
+      const memberRef=doc(db,'clubs',clubId,'members',user.uid);
+      const [c,m]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
+      if(!c.exists()) throw new Error('Club not found');
+      if(m.exists()) return;
+
+      const data=c.data();
+      const total=Number(data.total)||0;
+      const filled=Number(data.filled)||0;
+      if(total>0 && filled>=total) throw new Error('FULL');
+
+      tx.set(memberRef,{
+        userId:user.uid,
+        name:profile?.name || user.displayName || 'Student',
+        email:user.email || '',
+        role:'Member',
+        joinedAt:serverTimestamp()
+      });
+      tx.update(clubRef,{filled:filled+1});
+    });
+  }catch(e){
+    console.error(e);
+    if(e.message==='FULL') alert('This club is full.');
+    else alert('Could not join the club. Please try again.');
+  }
+}
+
+async function leaveClub(){
+  if(!user) return;
+  if(user.uid===club.founderId){
+    alert('The founder cannot leave the club. Transfer the founder role first.');
+    return;
+  }
+  if(!confirm('Leave this club?')) return;
+
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,'clubs',clubId);
+      const memberRef=doc(db,'clubs',clubId,'members',user.uid);
+      const [c,m]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
+      if(!m.exists()) return;
+      const filled=Number(c.data().filled)||0;
+      tx.delete(memberRef);
+      tx.update(clubRef,{filled:Math.max(0,filled-1)});
+    });
+  }catch(e){console.error(e);alert('Could not leave the club.');}
+}
+
+$('joinBtn').onclick=joinClub;
+$('leaveBtn').onclick=leaveClub;
+
+$('editClubForm').onsubmit=async e=>{
+  e.preventDefault();
+  if(!isFounder()) return;
+  try{
+    await updateDoc(doc(db,'clubs',clubId),{
+      full:$('editFull').value.trim(),
+      meets:$('editMeeting').value.trim(),
+      room:$('editLocation').value.trim(),
+      updatedAt:serverTimestamp()
+    });
+    setMessage('Club information saved.','success');
+  }catch(e){console.error(e);setMessage('Could not save club information.','error');}
+};
+
+$('transferBtn').onclick=async()=>{
+  if(!isFounder()) return;
+  const newFounder=$('transferSelect').value;
+  if(!newFounder){alert('Select a member first.');return;}
+  if(!confirm('Transfer the founder role to this member? You will no longer be the founder.')) return;
+
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,'clubs',clubId);
+      const newMemberRef=doc(db,'clubs',clubId,'members',newFounder);
+      const [c,m]=await Promise.all([tx.get(clubRef),tx.get(newMemberRef)]);
+      if(!c.exists() || !m.exists()) throw new Error('Member not found');
+      tx.update(clubRef,{founderId:newFounder,updatedAt:serverTimestamp()});
+      tx.update(newMemberRef,{role:'President',updatedAt:serverTimestamp()});
+      const oldMemberRef=doc(db,'clubs',clubId,'members',user.uid);
+      tx.update(oldMemberRef,{role:'Founder',updatedAt:serverTimestamp()});
+    });
+    alert('Founder role transferred.');
+  }catch(e){console.error(e);alert('Could not transfer the founder role.');}
+};
+
+onReady(async(u,p)=>{
+  user=u; profile=p; renderAuth();
+  if(club) renderClub();
+});
+
+async function loadClub(){
+  if(!clubId){$('loading').textContent='No club was specified.';return;}
+  try{
+    const snap=await getDoc(doc(db,'clubs',clubId));
+    if(!snap.exists()){$('loading').textContent='Club not found.';return;}
+    club={id:snap.id,...snap.data()};
+
+    const membersQuery=query(collection(db,'clubs',clubId,'members'),orderBy('joinedAt','asc'));
+    onSnapshot(membersQuery,s=>{
+      members=s.docs.map(d=>({id:d.id,...d.data()}));
+      renderClub();
+    },e=>{console.error(e);$('membersList').innerHTML='<p class="small">Could not load members.</p>';});
+
+    $('loading').classList.add('hidden');
+    $('page').classList.remove('hidden');
+    renderClub();
+  }catch(e){console.error(e);$('loading').textContent='Could not load this club.';}
+}
+loadClub();
+</script>
+</body>
+</html>
