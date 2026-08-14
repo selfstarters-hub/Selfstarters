@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Selfstarters — My Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#142B4F;--cream:#F6F3EA;--white:#fff;--gold:#F2B705;--coral:#E8543E;--green:#2F8F5B;--line:#DCD5C4;--muted:#6B6456;--ink:#14161A}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}
+a{text-decoration:none;color:inherit}button{font:inherit}.wrap{max-width:1100px;margin:auto;padding:0 28px}
+h1,h2,h3{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;line-height:.95;margin:0}.mono{font-family:"JetBrains Mono",monospace}
+header{position:sticky;top:0;z-index:10;background:#f6f3eadd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font:400 1.45rem Anton;text-transform:uppercase}
+.dot{display:inline-block;width:10px;height:10px;background:var(--coral);border-radius:50%;margin-right:8px}
+.links{display:flex;gap:25px;list-style:none;font:600 .72rem "JetBrains Mono";text-transform:uppercase}
+.auth{display:flex;gap:8px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+.solid{background:var(--navy);color:#fff;border-color:var(--navy)}.danger{background:#fff3f1;color:#9b2d20;border-color:#e2b2aa}
+.hero{background:var(--navy);color:#fff;padding:60px 0}.heroGrid{display:flex;align-items:center;gap:24px}
+.avatar{width:92px;height:92px;border-radius:50%;background:var(--gold);color:var(--navy);display:grid;place-items:center;font:400 2rem Anton;flex:none}
+.eyebrow{font:600 .72rem "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.hero h1{font-size:clamp(3rem,7vw,6rem);margin:10px 0}.hero p{margin:0;color:#dce4ee}.content{padding:42px 0 90px}
+.grid{display:grid;grid-template-columns:1.5fr .8fr;gap:22px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:2rem;margin-bottom:18px}.club{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.club:first-child{border-top:0}.clubMain{min-width:0}.clubName{font-size:1.2rem;font-weight:800}.clubRole{display:inline-block;margin-top:7px;background:#eef2f7;color:var(--navy);padding:6px 9px;border-radius:999px;font:600 .62rem "JetBrains Mono";text-transform:uppercase}
+.clubActions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.small{font-size:.8rem;color:var(--muted);line-height:1.5}
+.info{display:grid;gap:12px}.infoRow{padding-bottom:12px;border-bottom:1px solid var(--line)}.label{display:block;font:600 .63rem "JetBrains Mono";text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.loading{text-align:center;padding:100px;color:var(--muted)}.hidden{display:none!important}.empty{padding:25px 0;color:var(--muted)}
+@media(max-width:760px){.links{display:none}.grid{grid-template-columns:1fr}.heroGrid{align-items:flex-start}.wrap{padding:0 18px}.club{align-items:flex-start;flex-direction:column}.clubActions{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header>
+<nav class="wrap">
+<a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
+<ul class="links">
+<li><a href="./index.html">Home</a></li>
+<li><a href="./clubs.html">Clubs</a></li>
+<li><a href="./events.html">Events</a></li>
+<li><a href="./about.html">About</a></li>
+</ul>
+<div id="auth" class="auth"></div>
+</nav>
+</header>
+
+<div id="loading" class="loading">Loading your profile...</div>
+
+<section id="page" class="hidden">
+<section class="hero">
+<div class="wrap heroGrid">
+<div id="avatar" class="avatar">S</div>
+<div>
+<div class="eyebrow">My profile</div>
+<h1 id="name">Student</h1>
+<p id="roleLine">Student</p>
+</div>
+</div>
+</section>
+
+<main class="content wrap">
+<div class="grid">
+<section class="panel">
+<h2>My clubs</h2>
+<div id="clubsList"><div class="empty">Loading clubs...</div></div>
+</section>
+
+<aside>
+<section class="panel">
+<h2>Account</h2>
+<div class="info">
+<div class="infoRow"><span class="label">Name</span><strong id="infoName">—</strong></div>
+<div class="infoRow"><span class="label">Email</span><strong id="infoEmail">—</strong></div>
+<div class="infoRow"><span class="label">Grade</span><strong id="infoGrade">—</strong></div>
+<div class="infoRow"><span class="label">Account role</span><strong id="infoRole">—</strong></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Account actions</h2>
+<p class="small">Need to change your password?</p>
+<a class="btn" href="./index.html#login">Open login / reset password</a>
+</section>
+</aside>
+</div>
+</main>
+</section>
+
+<script type="module">
+import { db } from './firebase-init.js';
+import { onReady, doSignOut, sendResetEmail } from './auth.js';
+import {
+  collectionGroup, query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function initials(name){
+  return (name||'Student').trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
+}
+
+async function loadProfile(user,profile){
+  $('avatar').textContent=initials(profile?.name||user.displayName||user.email);
+  $('name').textContent=profile?.name || user.displayName || 'Student';
+  $('roleLine').textContent=profile?.role==='admin'?'Administrator':`Grade ${profile?.grade || '—'}`;
+
+  $('infoName').textContent=profile?.name || user.displayName || 'Student';
+  $('infoEmail').textContent=user.email || profile?.email || '—';
+  $('infoGrade').textContent=profile?.grade || '—';
+  $('infoRole').textContent=profile?.role==='admin'?'Administrator':'Student';
+
+  const q=query(collectionGroup(db,'members'),where('userId','==',user.uid));
+  const snap=await getDocs(q);
+
+  if(snap.empty){
+    $('clubsList').innerHTML='<div class="empty">You are not a member of any clubs yet.<br><br><a class="btn solid" href="./clubs.html">Explore clubs</a></div>';
+    return;
+  }
+
+  const rows=[];
+  for(const d of snap.docs){
+    const clubId=d.ref.parent.parent.id;
+    try{
+      const {getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const c=await getDoc(doc(db,'clubs',clubId));
+      if(c.exists()) rows.push({id:clubId,club:c.data(),member:d.data()});
+    }catch(e){console.error(e)}
+  }
+
+  $('clubsList').innerHTML=rows.map(x=>`
+    <div class="club">
+      <div class="clubMain">
+        <div class="clubName">${esc(x.club.name||'Club')}</div>
+        <span class="clubRole">${esc(x.member.role||'Member')}</span>
+        <div class="small">${esc(x.club.category||'Other')} · ${esc(x.club.meets||'Meeting TBD')}</div>
+      </div>
+      <div class="clubActions">
+        <a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+onReady(async(user,profile)=>{
+  if(!user){
+    location.href='./index.html#login';
+    return;
+  }
+
+  $('auth').innerHTML=`<span class="mono">${esc(profile?.name||user.email)}</span><button class="btn" id="logout">Log out</button>`;
+  $('logout').onclick=()=>doSignOut();
+
+  try{
+    await loadProfile(user,profile);
+    $('loading').classList.add('hidden');
+    $('page').classList.remove('hidden');
+  }catch(e){
+    console.error(e);
+    $('loading').textContent='Could not load your profile. Check the browser console for details.';
+  }
+});
+</script>
+</body>
+</html>
