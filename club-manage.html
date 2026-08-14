@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Club Management — Selfstarters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#142B4F;--cream:#F6F3EA;--white:#fff;--gold:#F2B705;--coral:#E8543E;--line:#DCD5C4;--muted:#6B6456;--ink:#14161A;--green:#2F8F5B;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}
+a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}.wrap{max-width:1150px;margin:auto;padding:0 24px}
+header{background:#f6f3eadd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav{height:74px;display:flex;align-items:center;justify-content:space-between}.logo{font:400 1.45rem Anton;text-transform:uppercase}.dot{display:inline-block;width:10px;height:10px;background:var(--coral);border-radius:50%;margin-right:8px}
+nav .links{display:flex;gap:20px;font:600 .7rem "JetBrains Mono";text-transform:uppercase}.btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700;display:inline-flex;justify-content:center;align-items:center}.solid{background:var(--navy);border-color:var(--navy);color:#fff}.danger{background:#fff1ef;color:var(--red);border-color:#e0b1aa}.green{background:#edf8f1;color:#23613b;border-color:#b8d9c1}
+.hero{background:var(--navy);color:#fff;padding:48px 0}.eyebrow{font:600 .68rem "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}h1,h2,h3{font-family:Anton;font-weight:400;text-transform:uppercase;line-height:.95}h1{font-size:clamp(3rem,7vw,5.5rem);margin:10px 0}h2{font-size:2rem;margin:0 0 18px}.hero p{color:#dce4ee;margin:0}.content{padding:35px 0 80px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px}.panel.full{grid-column:1/-1}.small{font-size:.82rem;color:var(--muted);line-height:1.5}.field{margin-bottom:13px}.field label{display:block;font:600 .63rem "JetBrains Mono";text-transform:uppercase;color:var(--muted);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:100px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap}.member,.application{border-top:1px solid var(--line);padding:15px 0;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.member:first-child,.application:first-child{border-top:0}.member-name,.application-name{font-weight:800}.tag{display:inline-block;margin-top:5px;background:#eef2f7;color:var(--navy);padding:5px 8px;border-radius:999px;font:600 .6rem "JetBrains Mono";text-transform:uppercase}.application .reason{font-size:.8rem;color:var(--muted);margin-top:5px}.empty{padding:20px 0;color:var(--muted)}.notice{padding:11px 13px;border-radius:8px;background:#eef7f0;color:#23613b;margin-bottom:15px}.error{background:#fff1ef;color:var(--red)}.hidden{display:none!important}.transfer{background:#fff8df;border:1px solid #ead58a;padding:12px;border-radius:9px;margin-top:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.panel.full{grid-column:auto}nav .links{display:none}.member,.application{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><nav class="wrap">
+<a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
+<div class="links"><a href="./clubs.html">Clubs</a><a href="./events.html">Events</a><a href="./profile.html">Profile</a></div>
+<a class="btn" href="./profile.html">Back to profile</a>
+</nav></header>
+
+<div id="loading" class="wrap" style="padding-top:80px;text-align:center">Loading club management...</div>
+
+<main id="app" class="hidden">
+<section class="hero"><div class="wrap">
+<div class="eyebrow">Founder dashboard</div>
+<h1 id="clubName">Club</h1>
+<p id="clubMeta">Manage your club</p>
+</div></section>
+
+<section class="content wrap">
+<div id="message"></div>
+<div class="grid">
+<section class="panel">
+<h2>Club settings</h2>
+<form id="clubForm">
+<div class="field"><label>Name</label><input id="name" required maxlength="100"></div>
+<div class="field"><label>Category</label><select id="category">
+<option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option>
+<option>Social</option><option>Community</option><option>Culture</option><option>Volunteering</option>
+<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option>
+</select></div>
+<div class="field"><label>Short description</label><input id="desc" maxlength="180"></div>
+<div class="field"><label>Full description</label><textarea id="full" maxlength="1500"></textarea></div>
+<div class="field"><label>Meeting time</label><input id="meets" maxlength="100"></div>
+<div class="field"><label>Location</label><input id="room" maxlength="150"></div>
+<button class="btn solid" type="submit">Save club</button>
+</form>
+</section>
+
+<section class="panel">
+<h2>Transfer founder role</h2>
+<p class="small">Choose a current member. They will become the new Founder and you will become a normal member.</p>
+<div id="transferBox"></div>
+</section>
+
+<section class="panel full">
+<div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap">
+<div><h2>Join requests</h2><p class="small">Approve or reject students who applied to join your club.</p></div>
+</div>
+<div id="applications"><div class="empty">Loading requests...</div></div>
+</section>
+
+<section class="panel full">
+<div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap">
+<div><h2>Members</h2><p class="small">Give members roles or remove them from your club.</p></div>
+</div>
+<div id="members"><div class="empty">Loading members...</div></div>
+</section>
+</div>
+</section>
+</main>
+
+<script type="module">
+import {auth,db} from './firebase-init.js';
+import {onReady,getUser,getProfile} from './auth.js';
+import {
+  doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,query,where,
+  serverTimestamp,runTransaction
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const params=new URLSearchParams(location.search);
+const clubId=params.get('id');
+
+let user=null,club=null,members=[],applications=[];
+
+function message(text,error=false){
+  $('message').innerHTML=`<div class="notice ${error?'error':''}">${esc(text)}</div>`;
+  setTimeout(()=>{$('message').innerHTML=''},3500);
+}
+
+async function load(){
+  const clubSnap=await getDoc(doc(db,'clubs',clubId));
+  if(!clubSnap.exists()) throw new Error('Club not found.');
+  club=clubSnap.data();
+
+  if(club.founderId!==user.uid) throw new Error('You are not the founder of this club.');
+
+  $('clubName').textContent=club.name||'Club';
+  $('clubMeta').textContent=`Founder · ${club.category||'Other'} · ${club.filled||0}/${club.total||0} members`;
+  $('name').value=club.name||'';
+  $('category').value=club.category||'Other';
+  $('desc').value=club.desc||'';
+  $('full').value=club.full||club.desc||'';
+  $('meets').value=club.meets||'';
+  $('room').value=club.room||'';
+
+  const membersSnap=await getDocs(collection(db,'clubs',clubId,'members'));
+  members=membersSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+  const appSnap=await getDocs(query(collection(db,'applications'),where('clubId','==',clubId)));
+  applications=appSnap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.status==='pending');
+
+  renderMembers();
+  renderApplications();
+  renderTransfer();
+}
+
+function renderApplications(){
+  if(!applications.length){
+    $('applications').innerHTML='<div class="empty">No pending join requests.</div>';
+    return;
+  }
+
+  $('applications').innerHTML=applications.map(a=>`
+    <div class="application">
+      <div>
+        <div class="application-name">${esc(a.name||'Student')}</div>
+        <span class="tag">Grade ${esc(a.grade||'—')}</span>
+        <div class="application .reason">${esc(a.reason||'No reason provided')}</div>
+        <div class="small">${esc(a.email||'')}</div>
+      </div>
+      <div class="actions">
+        <button class="btn green" data-accept="${esc(a.id)}">Accept</button>
+        <button class="btn danger" data-reject="${esc(a.id)}">Reject</button>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('[data-accept]').forEach(b=>b.onclick=()=>acceptApplication(b.dataset.accept));
+  document.querySelectorAll('[data-reject]').forEach(b=>b.onclick=()=>rejectApplication(b.dataset.reject));
+}
+
+async function acceptApplication(id){
+  const a=applications.find(x=>x.id===id);
+  if(!a)return;
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,'clubs',clubId);
+      const appRef=doc(db,'applications',id);
+      const memberRef=doc(db,'clubs',clubId,'members',a.userId);
+      const [cSnap,mSnap]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
+      if(!cSnap.exists()) throw new Error('Club no longer exists.');
+      if(mSnap.exists()) throw new Error('This student is already a member.');
+
+      const c=cSnap.data();
+      if((c.filled||0)>=(c.total||0)) throw new Error('The club is full.');
+
+      tx.set(memberRef,{
+        userId:a.userId,
+        name:a.name||'Student',
+        email:a.email||'',
+        role:'Member',
+        joinedAt:serverTimestamp()
+      });
+      tx.update(clubRef,{filled:(c.filled||0)+1});
+      tx.update(appRef,{status:'accepted',reviewedAt:serverTimestamp(),reviewedBy:user.uid});
+    });
+
+    await load();
+    message('Student accepted into the club.');
+  }catch(e){
+    console.error(e);
+    message(e.message||'Could not accept the application.',true);
+  }
+}
+
+async function rejectApplication(id){
+  try{
+    await updateDoc(doc(db,'applications',id),{
+      status:'rejected',reviewedAt:serverTimestamp(),reviewedBy:user.uid
+    });
+    await load();
+    message('Application rejected.');
+  }catch(e){
+    console.error(e);message('Could not reject the application.',true);
+  }
+}
+
+function renderMembers(){
+  if(!members.length){
+    $('members').innerHTML='<div class="empty">No members yet.</div>';
+    return;
+  }
+
+  $('members').innerHTML=members.map(m=>`
+    <div class="member">
+      <div>
+        <div class="member-name">${esc(m.name||'Student')}</div>
+        <span class="tag">${esc(m.role||'Member')}</span>
+        <div class="small">${esc(m.email||'')}</div>
+      </div>
+      <div class="actions">
+        ${m.userId!==user.uid?`
+          <select data-role="${esc(m.id)}">
+            ${['Member','Vice President','Developer','Secretary','Treasurer','Special'].map(r=>`<option ${m.role===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+          <button class="btn solid" data-save-role="${esc(m.id)}">Save role</button>
+          <button class="btn danger" data-remove="${esc(m.id)}">Remove</button>
+        `:'<span class="tag">Founder</span>'}
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('[data-save-role]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.saveRole;
+    const role=document.querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+    try{
+      await updateDoc(doc(db,'clubs',clubId,'members',id),{role});
+      await load();message('Member role updated.');
+    }catch(e){console.error(e);message('Could not update role.',true);}
+  });
+
+  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=async()=>{
+    if(!confirm('Remove this member from the club?'))return;
+    try{
+      await runTransaction(db,async tx=>{
+        const clubRef=doc(db,'clubs',clubId);
+        const memberRef=doc(db,'clubs',clubId,'members',b.dataset.remove);
+        const cSnap=await tx.get(clubRef);
+        const c=cSnap.data()||{};
+        tx.delete(memberRef);
+        tx.update(clubRef,{filled:Math.max(0,(c.filled||0)-1)});
+      });
+      await load();message('Member removed.');
+    }catch(e){console.error(e);message('Could not remove member.',true);}
+  });
+}
+
+function renderTransfer(){
+  const choices=members.filter(m=>m.userId!==user.uid);
+  if(!choices.length){
+    $('transferBox').innerHTML='<div class="empty">You need at least one other member before you can transfer the Founder role.</div>';
+    return;
+  }
+
+  $('transferBox').innerHTML=`
+    <select id="transferTo" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px">
+      ${choices.map(m=>`<option value="${esc(m.userId)}">${esc(m.name||m.email||m.userId)} — ${esc(m.role||'Member')}</option>`).join('')}
+    </select>
+    <div class="transfer">This action is permanent for your current session: the selected member becomes Founder and you lose Founder permissions.</div>
+    <button class="btn danger" id="transferBtn">Transfer Founder role</button>`;
+
+  $('transferBtn').onclick=async()=>{
+    const newFounder=$('transferTo').value;
+    if(!confirm('Transfer Founder role to this member? You will no longer be Founder.'))return;
+    try{
+      await runTransaction(db,async tx=>{
+        const clubRef=doc(db,'clubs',clubId);
+        const oldFounderRef=doc(db,'clubs',clubId,'members',user.uid);
+        const newFounderRef=doc(db,'clubs',clubId,'members',newFounder);
+        const [cSnap,newSnap]=await Promise.all([tx.get(clubRef),tx.get(newFounderRef)]);
+        if(!cSnap.exists()||!newSnap.exists()) throw new Error('Member not found.');
+        tx.update(clubRef,{founderId:newFounder,updatedAt:serverTimestamp()});
+        tx.update(newFounderRef,{role:'Founder'});
+        tx.update(oldFounderRef,{role:'Member'});
+      });
+      location.href=`./club.html?id=${encodeURIComponent(clubId)}`;
+    }catch(e){console.error(e);message(e.message||'Could not transfer Founder role.',true);}
+  };
+}
+
+$('clubForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  try{
+    await updateDoc(doc(db,'clubs',clubId),{
+      name:$('name').value.trim(),
+      category:$('category').value,
+      desc:$('desc').value.trim(),
+      full:$('full').value.trim(),
+      meets:$('meets').value.trim(),
+      room:$('room').value.trim(),
+      updatedAt:serverTimestamp()
+    });
+    await load();message('Club updated successfully.');
+  }catch(e){console.error(e);message('Could not update the club.',true);}
+});
+
+onReady(async u=>{
+  user=u;
+  if(!user){location.href='./index.html#login';return;}
+  try{
+    if(!clubId) throw new Error('Missing club ID.');
+    await load();
+    $('loading').classList.add('hidden');
+    $('app').classList.remove('hidden');
+  }catch(e){
+    console.error(e);
+    $('loading').innerHTML=`<div style="max-width:650px;margin:auto"><h2>Access denied</h2><p>${esc(e.message||'You cannot manage this club.')}</p><a class="btn solid" href="./profile.html">Return to profile</a></div>`;
+  }
+});
+</script>
+</body>
+</html>

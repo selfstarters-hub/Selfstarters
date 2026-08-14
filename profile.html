@@ -175,6 +175,7 @@ async function loadClubs(user){
       </div>
       <div class="clubActions">
         <a class="btn solid" href="./club.html?id=${encodeURIComponent(x.id)}">Open club</a>
+        ${x.club.founderId===user.uid?`<a class="btn" href="./club-manage.html?id=${encodeURIComponent(x.id)}">Manage</a>`:''}
       </div>
     </div>
   `).join('');
