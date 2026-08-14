@@ -2,11 +2,21 @@ import { db, SITE } from './firebase-init.js';
 import { requireAuth, getUser, getProfile, onReady } from './auth.js';
 import {
   collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, getDoc,
-  getDocs, query, where, updateDoc, increment, serverTimestamp, runTransaction
+  getDocs, query, where, updateDoc, increment, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const CATEGORY_COLORS = { "Tech": "#E8543E", "Academic": "#142B4F", "Sports": "#2F8F5B", "Games": "#8A4FB8", "Arts": "#D98A1E" };
-const CATEGORY_ICONS  = { "Tech": "◆", "Academic": "∑", "Sports": "●", "Games": "♞", "Arts": "✎" };
+const CATEGORY_COLORS = {
+  "Tech": "#E8543E", "Academic": "#142B4F", "Sports": "#2F8F5B",
+  "Games": "#8A4FB8", "Arts": "#D98A1E", "Social": "#C94F8A",
+  "Community": "#3C7A89", "Culture": "#9A6A3A", "Volunteering": "#4E8B57",
+  "Leadership": "#6A5ACD", "Entrepreneurship": "#B06A2B", "Science": "#2878A8",
+  "Other": "#6B6456"
+};
+const CATEGORY_ICONS = {
+  "Tech": "◆", "Academic": "∑", "Sports": "●", "Games": "♞", "Arts": "✎",
+  "Social": "♥", "Community": "◎", "Culture": "◈", "Volunteering": "✦",
+  "Leadership": "★", "Entrepreneurship": "$", "Science": "⚗", "Other": "★"
+};
 const colorFor = (cat) => CATEGORY_COLORS[cat] || '#6B6456';
 const iconFor  = (cat) => CATEGORY_ICONS[cat] || '★';
 
@@ -216,20 +226,12 @@ async function openClubModal(id){
     requireAuth(async () => {
       const user = getUser();
       const p = getProfile();
-      const reviewRef = doc(db, 'reviews', `${c.id}_${user.uid}`);
-      const clubRef = doc(db, 'clubs', c.id);
-      await runTransaction(db, async (tx) => {
-        const [reviewSnap, clubSnap] = await Promise.all([tx.get(reviewRef), tx.get(clubRef)]);
-        if(reviewSnap.exists()) throw new Error('You have already reviewed this club.');
-        const d = clubSnap.exists() ? clubSnap.data() : {};
-        tx.set(reviewRef, {
-          clubId: c.id, userId: user.uid, userName: p?.name || 'Student',
-          rating: chosenStar, text, createdAt: serverTimestamp()
-        });
-        tx.update(clubRef, {
-          ratingSum: (d.ratingSum || 0) + chosenStar,
-          ratingCount: (d.ratingCount || 0) + 1
-        });
+      await addDoc(collection(db, 'reviews'), {
+        clubId: c.id, userId: user.uid, userName: p?.name || 'Student',
+        rating: chosenStar, text, createdAt: serverTimestamp()
+      });
+      await updateDoc(doc(db, 'clubs', c.id), {
+        ratingSum: increment(chosenStar), ratingCount: increment(1)
       });
       loadReviews(c.id);
       document.getElementById('reviewForm').reset();
@@ -296,20 +298,15 @@ async function toggleRsvp(eventId){
     const rsvpId = `${eventId}_${user.uid}`;
     const ref = doc(db, 'rsvps', rsvpId);
     const eventRef = doc(db, 'events', eventId);
-    await runTransaction(db, async (tx) => {
-      const [rsvpSnap, eventSnap] = await Promise.all([tx.get(ref), tx.get(eventRef)]);
-      if(!eventSnap.exists()) throw new Error('This event is no longer available.');
-      const currentCount = Math.max(0, eventSnap.data().rsvpCount || 0);
-      if(rsvpSnap.exists()){
-        tx.delete(ref);
-        tx.update(eventRef, { rsvpCount: Math.max(0, currentCount - 1) });
-        myRsvps.delete(eventId);
-      } else {
-        tx.set(ref, { eventId, userId: user.uid, createdAt: serverTimestamp() });
-        tx.update(eventRef, { rsvpCount: currentCount + 1 });
-        myRsvps.add(eventId);
-      }
-    });
+    if(myRsvps.has(eventId)){
+      await deleteDoc(ref);
+      await updateDoc(eventRef, { rsvpCount: increment(-1) });
+      myRsvps.delete(eventId);
+    } else {
+      await setDoc(ref, { eventId, userId: user.uid, createdAt: serverTimestamp() });
+      await updateDoc(eventRef, { rsvpCount: increment(1) });
+      myRsvps.add(eventId);
+    }
     renderEvents();
   });
 }
@@ -343,6 +340,46 @@ function showPitchSuccess(){
   if(!box) return;
   box.innerHTML = `<div class="success-box"><div class="icon">✓</div><h3>Pitch sent</h3><p>An admin will review it and follow up by email.</p></div>`;
 }
+
+/* ============ PROPOSE AN EVENT (gated) ============ */
+document.getElementById('eventPitchForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById('eventPitchTitle').value.trim();
+  const club = document.getElementById('eventPitchClub').value.trim();
+  const date = document.getElementById('eventPitchDate').value;
+  const time = document.getElementById('eventPitchTime').value.trim();
+  const location = document.getElementById('eventPitchLocation').value.trim();
+  const description = document.getElementById('eventPitchDesc').value.trim();
+
+  requireAuth(async () => {
+    const user = getUser();
+    const p = getProfile();
+
+    await addDoc(collection(db, 'eventPitches'), {
+      userId: user.uid,
+      name: p?.name || user.email || 'Student',
+      email: user.email || '',
+      title,
+      club,
+      date,
+      time,
+      location,
+      description,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+
+    const box = document.getElementById('eventPitchFormBox');
+    if(box){
+      box.innerHTML = `<div class="success-box">
+        <div class="icon">✓</div>
+        <h3>Event proposal sent</h3>
+        <p>An admin will review your event and publish it if approved.</p>
+      </div>`;
+    }
+  });
+});
 
 /* ============ CONTACT (gated) ============ */
 document.getElementById('contactForm')?.addEventListener('submit', (e) => {

@@ -17,7 +17,15 @@ header{position:sticky;top:0;z-index:10;background:#f6f3eadd;backdrop-filter:blu
 <main class="wrap"><div class="controls"><input id="search" class="search" placeholder="Search clubs..."><div id="filters" class="chips"></div></div><div id="grid" class="grid"><div class="empty">Loading clubs...</div></div></main>
 <script type="module">
 import{db}from"./firebase-init.js";import{onReady,getProfile,doSignOut}from"./auth.js";import{collection,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const colors={Tech:"#E8543E",Academic:"#142B4F",Sports:"#2F8F5B",Games:"#8A4FB8",Arts:"#D98A1E",Other:"#6B6456"},icons={Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Other:"★"};let clubs=[],cat="All";
+const colors={
+Tech:"#E8543E",Academic:"#142B4F",Sports:"#2F8F5B",Games:"#8A4FB8",Arts:"#D98A1E",
+Social:"#C94F8A",Community:"#3C7A89",Culture:"#9A6A3A",Volunteering:"#4E8B57",
+Leadership:"#6A5ACD",Entrepreneurship:"#B06A2B",Science:"#2878A8",Other:"#6B6456"
+},
+icons={
+Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Social:"♥",Community:"◎",
+Culture:"◈",Volunteering:"✦",Leadership:"★",Entrepreneurship:"$",Science:"⚗",Other:"★"
+};let clubs=[],cat="All";
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 onReady((u,p)=>{auth.innerHTML=p?`<span class="mono">${esc(p.name||u.email)}</span><button class="btn" id="logout">Log out</button>`:`<a class="btn solid" href="./index.html#login">Log in</a>`;if(p)logout.onclick=doSignOut});
 onSnapshot(collection(db,"clubs"),s=>{clubs=s.docs.map(d=>({id:d.id,...d.data()}));renderFilters();render()});

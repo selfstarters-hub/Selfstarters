@@ -138,9 +138,21 @@ async function loadClubs(user){
   const rows=[];
   for(const clubDoc of clubsSnap.docs){
     try{
+      const clubData=clubDoc.data();
       const memberSnap=await getDoc(doc(db,'clubs',clubDoc.id,'members',user.uid));
+
       if(memberSnap.exists()){
-        rows.push({id:clubDoc.id,club:clubDoc.data(),member:memberSnap.data()});
+        rows.push({id:clubDoc.id,club:clubData,member:memberSnap.data()});
+      } else if(clubData.founderId === user.uid){
+        rows.push({
+          id:clubDoc.id,
+          club:clubData,
+          member:{
+            userId:user.uid,
+            role:'Founder',
+            name:user.displayName||profile?.name||'Founder'
+          }
+        });
       }
     }catch(err){
       console.warn('Could not read membership for club '+clubDoc.id,err);
@@ -158,7 +170,7 @@ async function loadClubs(user){
     <div class="club">
       <div>
         <div class="clubName">${esc(x.club.name||'Club')}</div>
-        <span class="clubRole">${esc(x.member.role||'Member')}</span>
+        <span class="clubRole">${esc(x.club.founderId===user.uid?'Founder':(x.member.role||'Member'))}</span>
         <div class="small">${esc(x.club.category||'Other')} · ${esc(x.club.meets||'Meeting TBD')}</div>
       </div>
       <div class="clubActions">

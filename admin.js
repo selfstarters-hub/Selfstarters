@@ -5,7 +5,7 @@ import {
   query, orderBy, serverTimestamp, runTransaction, getDoc
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-const state = { clubs: [], events: [], applications: [], pitches: [], messages: [], reviews: [], users: [] };
+const state = { clubs: [], events: [], applications: [], pitches: [], eventPitches: [], messages: [], reviews: [], users: [] };
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const stamp = value => value?.toDate ? value.toDate().toLocaleString() : '—';
@@ -20,24 +20,74 @@ onReady((user) => {
   $('gate').style.display = 'none';
   $('adminApp').style.display = 'grid';
   $('adminIdentity').textContent = `${getProfile()?.name || user.email} · Admin`;
+  installEventPitchPanel();
   startListeners();
 });
 
 $('adminLogout')?.addEventListener('click', () => doSignOut());
 
+function installEventPitchPanel(){
+  if(document.querySelector('.admin-nav-btn[data-panel="eventPitches"]')) return;
+
+  const nav = document.querySelector('.admin-sidebar');
+  const spacer = nav?.querySelector('.spacer');
+  if(nav){
+    const btn=document.createElement('button');
+    btn.className='admin-nav-btn';
+    btn.dataset.panel='eventPitches';
+    btn.textContent='Event proposals';
+    if(spacer) nav.insertBefore(btn,spacer); else nav.appendChild(btn);
+    btn.addEventListener('click',()=>switchPanel('eventPitches'));
+  }
+
+  const main=document.querySelector('.admin-main');
+  if(main){
+    const panel=document.createElement('section');
+    panel.className='admin-panel';
+    panel.id='panel-eventPitches';
+    panel.innerHTML=`
+      <div class="admin-toolbar">
+        <div>
+          <h2>Event proposals</h2>
+          <p class="small-muted">Review events submitted by students before they become public.</p>
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr>
+            <th>Event</th><th>Club / organizer</th><th>Date / time</th>
+            <th>Location</th><th>Description</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="eventPitchesTable"></tbody>
+        </table>
+      </div>`;
+    main.appendChild(panel);
+  }
+}
+
+
 document.querySelectorAll('.admin-nav-btn[data-panel]').forEach(btn => btn.addEventListener('click', () => switchPanel(btn.dataset.panel)));
 function switchPanel(name){
   document.querySelectorAll('.admin-nav-btn[data-panel]').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
-  $('panelTitle').textContent = ({dashboard:'Dashboard',clubs:'Clubs',events:'Events',applications:'Applications',pitches:'Club pitches',messages:'Contact messages',reviews:'Reviews',users:'Users'})[name] || 'Dashboard';
+  $('panelTitle').textContent = ({
+  dashboard:'Dashboard',clubs:'Clubs',events:'Events',applications:'Applications',
+  pitches:'Club pitches',eventPitches:'Event proposals',messages:'Contact messages',
+  reviews:'Reviews',users:'Users'
+})[name] || 'Dashboard';
 }
 
 function startListeners(){
   const configs = [
-    ['clubs','clubs'],['events','events'],['applications','applications'],['pitches','clubPitches'],['messages','contactMessages'],['reviews','reviews'],['users','users']
+    ['clubs','clubs'],['events','events'],['applications','applications'],['pitches','clubPitches'],
+['eventPitches','eventPitches'],['messages','contactMessages'],['reviews','reviews'],['users','users']
   ];
   for(const [key, coll] of configs){
-    onSnapshot(collection(db, coll), snap => { state[key] = snap.docs.map(d => ({id:d.id,...d.data()})); renderAll(); }, err => console.error(coll, err));
+    onSnapshot(collection(db, coll), async snap => {
+      state[key] = snap.docs.map(d => ({id:d.id,...d.data()}));
+      renderAll();
+      if(key === 'pitches') await migrateOldApprovedClubPitches();
+    }, err => console.error(coll, err));
   }
 }
 function renderAll(){
@@ -45,7 +95,8 @@ function renderAll(){
   $('countEvents').textContent = state.events.length;
   $('countApplications').textContent = state.applications.filter(x => x.status === 'pending').length;
   $('countUsers').textContent = state.users.length;
-  renderClubs(); renderEvents(); renderApplications(); renderPitches(); renderMessages(); renderReviews(); renderUsers();
+  renderClubs(); renderEvents(); renderApplications(); renderPitches();
+  renderEventPitches(); renderMessages(); renderReviews(); renderUsers();
 }
 
 $('newClubBtn').addEventListener('click', () => openClubEditor());
@@ -54,10 +105,18 @@ $('newEventBtn').addEventListener('click', () => openEventEditor());
 function openClubEditor(club=null){
   const c = club || {name:'',category:'Tech',desc:'',full:'',meets:'',room:'',filled:0,total:20,number:'',ratingSum:0,ratingCount:0};
   const box = $('clubEditor'); box.style.display='block';
-  box.innerHTML = `<h3>${club ? 'Edit club' : 'Add club'}</h3><form class="stack-form" id="clubEditForm"><div class="grid-2"><label>Name<input id="ceName" value="${esc(c.name)}" required></label><label>Category<select id="ceCategory"><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option><option>Other</option></select></label><label>Short description<input id="ceDesc" value="${esc(c.desc)}" required></label><label>Meeting time<input id="ceMeets" value="${esc(c.meets)}" required></label><label>Location<input id="ceRoom" value="${esc(c.room)}"></label><label>Roster capacity<input id="ceTotal" type="number" min="1" value="${Number(c.total)||20}" required></label><label>Filled<input id="ceFilled" type="number" min="0" value="${Number(c.filled)||0}" required></label><label>Display number<input id="ceNumber" value="${esc(c.number || '')}"></label></div><label>Full description<textarea id="ceFull" required>${esc(c.full)}</textarea></label><div class="admin-form-actions"><button class="btn btn-solid" type="submit">${club?'Save changes':'Create club'}</button><button class="btn" type="button" id="cancelClub">Cancel</button></div></form>`;
+  box.innerHTML = `<h3>${club ? 'Edit club' : 'Add club'}</h3><form class="stack-form" id="clubEditForm"><div class="grid-2"><label>Name<input id="ceName" value="${esc(c.name)}" required></label><label>Category<select id="ceCategory"><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option>
+<option>Social</option><option>Community</option><option>Culture</option><option>Volunteering</option>
+<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option></select></label><label>Short description<input id="ceDesc" value="${esc(c.desc)}" required></label><label>Meeting time<input id="ceMeets" value="${esc(c.meets)}" required></label><label>Location<input id="ceRoom" value="${esc(c.room)}"></label><label>Roster capacity<input id="ceTotal" type="number" min="1" value="${Number(c.total)||20}" required></label><label>Filled<input id="ceFilled" type="number" min="0" value="${Number(c.filled)||0}" required></label><label>Display number<input id="ceNumber" value="${esc(c.number || '')}"></label></div><label>Full description<textarea id="ceFull" required>${esc(c.full)}</textarea></label><div class="admin-form-actions"><button class="btn btn-solid" type="submit">${club?'Save changes':'Create club'}</button><button class="btn" type="button" id="cancelClub">Cancel</button></div></form>`;
   $('ceCategory').value = c.category || 'Tech';
   $('cancelClub').onclick=()=>box.style.display='none';
-  $('clubEditForm').onsubmit=async e=>{e.preventDefault(); const data={name:$('ceName').value.trim(),category:$('ceCategory').value,desc:$('ceDesc').value.trim(),full:$('ceFull').value.trim(),meets:$('ceMeets').value.trim(),room:$('ceRoom').value.trim(),total:Math.max(1,Number($('ceTotal').value)),filled:Math.max(0,Number($('ceFilled').value)),number:$('ceNumber').value.trim()}; if(data.filled>data.total)data.filled=data.total; if(club) await updateDoc(doc(db,'clubs',club.id),data); else await addDoc(collection(db,'clubs'),{...data,ratingSum:0,ratingCount:0,createdAt:serverTimestamp()}); box.style.display='none';};
+  $('clubEditForm').onsubmit=async e=>{e.preventDefault(); const data={name:$('ceName').value.trim(),category:$('ceCategory').value,desc:$('ceDesc').value.trim(),full:$('ceFull').value.trim(),meets:$('ceMeets').value.trim(),room:$('ceRoom').value.trim(),total:Math.max(1,Number($('ceTotal').value)),filled:Math.max(0,Number($('ceFilled').value)),number:$('ceNumber').value.trim()}; if(data.filled>data.total)data.filled=data.total;
+    if(club) {
+      await updateDoc(doc(db,'clubs',club.id),data);
+    } else {
+      const ref = await addDoc(collection(db,'clubs'),{...data,ratingSum:0,ratingCount:0,createdAt:serverTimestamp()});
+    }
+    box.style.display='none';};
 }
 function renderClubs(){
   $('clubsTable').innerHTML = state.clubs.length ? state.clubs.map(c=>`<tr><td><strong>${esc(c.name)}</strong><br><span class="small-muted">${esc(c.desc)}</span></td><td>${esc(c.category)}</td><td>${esc(c.meets)}<br><span class="small-muted">${esc(c.room)}</span></td><td>${Number(c.filled)||0}/${Number(c.total)||0}</td><td class="actions"><button class="btn btn-sm" data-edit-club="${c.id}">Edit</button><button class="btn btn-danger btn-sm" data-delete-club="${c.id}">Delete</button></td></tr>`).join('') : emptyRow(5);
@@ -95,8 +154,116 @@ async function approvePitch(id){
   const p=state.pitches.find(x=>x.id===id); if(!p)return;
   const exists=state.clubs.some(c=>c.name.toLowerCase()===String(p.clubName).toLowerCase());
   if(exists){alert('A club with this name already exists.');return;}
-  await addDoc(collection(db,'clubs'),{name:p.clubName,category:p.category,desc:p.description,full:p.description,meets:'TBD',room:'TBD',filled:0,total:20,number:'',ratingSum:0,ratingCount:0,createdAt:serverTimestamp()});
-  await updateDoc(doc(db,'clubPitches',id),{status:'accepted',reviewedAt:serverTimestamp()});
+  const clubRef = await addDoc(collection(db,'clubs'),{
+    name:p.clubName, category:p.category, desc:p.description, full:p.description,
+    meets:'TBD', room:'TBD', filled:1, total:20, number:'',
+    ratingSum:0, ratingCount:0, founderId:p.userId, createdAt:serverTimestamp()
+  });
+
+  await setDoc(doc(db,'clubs',clubRef.id,'members',p.userId),{
+    userId:p.userId, name:p.name||'Student', email:p.email||'',
+    role:'Founder', joinedAt:serverTimestamp()
+  });
+
+  await updateDoc(doc(db,'clubPitches',id),{
+    status:'accepted', reviewedAt:serverTimestamp(), clubId:clubRef.id
+  });
+}
+
+async function migrateOldApprovedClubPitches(){
+  try{
+    const accepted = state.pitches.filter(p => p.status === 'accepted' && p.userId && !p.clubId);
+    if(!accepted.length) return;
+
+    for(const p of accepted){
+      const match = state.clubs.find(c =>
+        String(c.name||'').trim().toLowerCase() === String(p.clubName||'').trim().toLowerCase()
+      );
+      if(!match || match.founderId) continue;
+
+      await updateDoc(doc(db,'clubs',match.id),{
+        founderId:p.userId,
+        filled:Math.max(1,Number(match.filled)||0),
+        updatedAt:serverTimestamp()
+      });
+
+      await setDoc(doc(db,'clubs',match.id,'members',p.userId),{
+        userId:p.userId,
+        name:p.name||'Student',
+        email:p.email||'',
+        role:'Founder',
+        joinedAt:serverTimestamp()
+      });
+
+      await updateDoc(doc(db,'clubPitches',p.id),{
+        clubId:match.id,
+        migratedAt:serverTimestamp()
+      });
+    }
+  }catch(e){
+    console.error('Old club founder migration failed:',e);
+  }
+}
+
+function renderEventPitches(){
+  const list=[...state.eventPitches].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+
+  const table=$('eventPitchesTable');
+  if(!table) return;
+
+  table.innerHTML=list.length ? list.map(p=>`
+    <tr>
+      <td><strong>${esc(p.title)}</strong><br><span class="small-muted">${esc(p.name)} · ${esc(p.email)}</span></td>
+      <td>${esc(p.club)}</td>
+      <td>${esc(p.date)}<br>${esc(p.time)}</td>
+      <td>${esc(p.location)}</td>
+      <td>${esc(p.description)}</td>
+      <td><span class="status-pill ${statusClass(p.status)}">${esc(p.status)}</span></td>
+      <td class="actions">
+        ${p.status==='pending'
+          ? `<button class="btn btn-sm" data-approve-event-pitch="${p.id}">Approve</button>
+             <button class="btn btn-danger btn-sm" data-reject-event-pitch="${p.id}">Reject</button>`
+          : `<button class="btn btn-danger btn-sm" data-delete-event-pitch="${p.id}">Delete</button>`}
+      </td>
+    </tr>
+  `).join('') : emptyRow(7);
+
+  document.querySelectorAll('[data-approve-event-pitch]').forEach(b=>{
+    b.onclick=()=>approveEventPitch(b.dataset.approveEventPitch);
+  });
+  document.querySelectorAll('[data-reject-event-pitch]').forEach(b=>{
+    b.onclick=async()=>{
+      await updateDoc(doc(db,'eventPitches',b.dataset.rejectEventPitch),{
+        status:'rejected', reviewedAt:serverTimestamp()
+      });
+    };
+  });
+  document.querySelectorAll('[data-delete-event-pitch]').forEach(b=>{
+    b.onclick=async()=>{
+      if(confirm('Delete this event proposal?'))
+        await deleteDoc(doc(db,'eventPitches',b.dataset.deleteEventPitch));
+    };
+  });
+}
+
+async function approveEventPitch(id){
+  const p=state.eventPitches.find(x=>x.id===id);
+  if(!p) return;
+
+  try{
+    await addDoc(collection(db,'events'),{
+      title:p.title, club:p.club, date:p.date, time:p.time,
+      location:p.location, desc:p.description, status:'upcoming',
+      rsvpCount:0, proposedBy:p.userId||'', createdAt:serverTimestamp()
+    });
+
+    await updateDoc(doc(db,'eventPitches',id),{
+      status:'accepted', reviewedAt:serverTimestamp()
+    });
+  }catch(e){
+    console.error(e);
+    alert('Could not approve this event proposal.');
+  }
 }
 
 function renderMessages(){

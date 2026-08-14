@@ -1,94 +1,157 @@
-// Selfstarters Firestore rules.
-// IMPORTANT: replace the email below with the founder/admin email before publishing.
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
-    function admin() {
-      return signedIn() && request.auth.token.email == 'ilyass@example.com';
-    }
-    function owner() {
-      return signedIn() && request.auth.uid == resource.data.userId;
+
+    function signedIn() {
+      return request.auth != null;
     }
 
-    // Public content
-    match /clubs/{id} {
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc(request.auth.uid).data.role == 'admin';
+    }
+
+    function isFounder(clubId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/clubs/$(clubId))
+        && get(/databases/$(database)/documents/clubs/$(clubId)).data.founderId == request.auth.uid;
+    }
+
+    // USER PROFILES
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if signedIn() && request.auth.uid == userId;
+      allow update: if signedIn() && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // CLUBS
+    match /clubs/{clubId} {
       allow read: if true;
-      allow create, delete: if admin();
-      allow update: if admin() || (signedIn()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ratingSum','ratingCount'])
-        && request.resource.data.ratingCount == resource.data.ratingCount + 1
-        && request.resource.data.ratingSum > resource.data.ratingSum
-        && getAfter(/databases/$(database)/documents/reviews/$(id + '_' + request.auth.uid)).exists()
-        && !get(/databases/$(database)/documents/reviews/$(id + '_' + request.auth.uid)).exists());
+
+      // Keep your existing club-creation code working.
+      // For new clubs, your JavaScript should set founderId to request.auth.uid.
+      allow create: if isAdmin();
+
+      // Admins can do everything.
+      // A founder can update their own club, but cannot change founderId
+      // unless the new founder is already a member of that club.
+      allow update: if isAdmin()
+        || (
+          isFounder(clubId)
+          && (
+            request.resource.data.founderId == resource.data.founderId
+            || exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.resource.data.founderId))
+          )
+        );
+
+      allow delete: if isAdmin();
+
+      // CLUB MEMBERS
+      match /members/{memberId} {
+        // Members are visible on the club page.
+        allow read: if true;
+
+        // A student can join only as themselves.
+        // The club filled count must increase by exactly one.
+        allow create: if (
+          isAdmin()
+          || (
+            signedIn()
+            && memberId == request.auth.uid
+            && !exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(memberId))
+          )
+        )
+          && (
+            isAdmin()
+            || (
+              request.resource.data.userId == request.auth.uid
+              && request.resource.data.role == 'Member'
+              && get(/databases/$(database)/documents/clubs/$(clubId)).data.filled < get(/databases/$(database)/documents/clubs/$(clubId)).data.total
+              && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.filled
+                   == get(/databases/$(database)/documents/clubs/$(clubId)).data.filled + 1
+            )
+          );
+
+        // Founder can change roles. A normal member cannot edit their own role.
+        allow update: if isAdmin() || isFounder(clubId);
+
+        // A member can leave. Founder cannot remove themselves.
+        // Founder/admin can remove another member.
+        allow delete: if signedIn()
+          && (
+            (memberId == request.auth.uid
+              && get(/databases/$(database)/documents/clubs/$(clubId)).data.founderId != request.auth.uid)
+            || isFounder(clubId)
+            || isAdmin()
+          );
+      }
     }
-    match /events/{id} {
+
+    // EVENTS
+    match /events/{eventId} {
       allow read: if true;
-      allow create, delete: if admin();
-      allow update: if admin() || (signedIn()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvpCount'])
-        && (request.resource.data.rsvpCount == resource.data.rsvpCount + 1
-          || request.resource.data.rsvpCount == resource.data.rsvpCount - 1)
-        && (
-          (request.resource.data.rsvpCount == resource.data.rsvpCount + 1
-            && getAfter(/databases/$(database)/documents/rsvps/$(id + '_' + request.auth.uid)).exists()
-            && !get(/databases/$(database)/documents/rsvps/$(id + '_' + request.auth.uid)).exists())
-          ||
-          (request.resource.data.rsvpCount == resource.data.rsvpCount - 1
-            && !getAfter(/databases/$(database)/documents/rsvps/$(id + '_' + request.auth.uid)).exists()
-            && get(/databases/$(database)/documents/rsvps/$(id + '_' + request.auth.uid)).exists())
-        ));
+      allow create, update, delete: if isAdmin();
     }
 
-    // Student profiles: users can create/read/update their own profile, but cannot self-promote.
-    match /users/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || admin());
-      allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.role == (request.auth.token.email == 'ilyass@example.com' ? 'admin' : 'student');
-      allow update: if admin() || (signedIn() && request.auth.uid == uid
-        && request.resource.data.role == resource.data.role);
-      allow delete: if admin();
+    // APPLICATIONS
+    match /applications/{applicationId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
-    // Applications and club pitches are student-created; only admins can moderate them.
-    match /applications/{id} {
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
-      allow update, delete: if admin();
-    }
-    match /clubPitches/{id} {
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
-      allow update, delete: if admin();
-    }
-
-    // Reviews: one document per club/user, id must be clubId_userId.
-    match /reviews/{id} {
+    // REVIEWS
+    match /reviews/{reviewId} {
       allow read: if true;
       allow create: if signedIn()
-        && id == request.resource.data.clubId + '_' + request.auth.uid
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.rating >= 1
-        && request.resource.data.rating <= 5;
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if signedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // RSVPs
+    match /rsvps/{rsvpId} {
+      allow read: if signedIn()
+        && resource.data.userId == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow delete: if signedIn()
+        && resource.data.userId == request.auth.uid;
       allow update: if false;
-      allow delete: if admin();
     }
 
-    // RSVP documents are private to the student, but event counters are admin/client managed only via transactions.
-    match /rsvps/{id} {
-      allow read: if signedIn() && (resource.data.userId == request.auth.uid || admin());
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid
-        && id == request.resource.data.eventId + '_' + request.auth.uid;
-      allow delete: if signedIn() && (resource.data.userId == request.auth.uid || admin());
-      allow update: if false;
+    // CLUB PITCHES
+    match /clubPitches/{pitchId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
     }
 
-    match /contactMessages/{id} {
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if admin();
+
+    // EVENT PROPOSALS
+    // Students can submit proposals. Only admins can review/manage them.
+    match /eventPitches/{pitchId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
     }
 
-    // Deny everything else by default.
-    match /{document=**} { allow read, write: if false; }
+    // CONTACT MESSAGES
+    match /contactMessages/{messageId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

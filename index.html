@@ -524,9 +524,28 @@
         <p>Have an idea? Send it to the Selfstarters admin team for review.</p>
         <form id="pitchForm" class="stack-form">
           <label>Club name<input id="pitchName" required></label>
-          <label>Category<select id="pitchCategory" required><option value="">Choose</option><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option></select></label>
+          <label>Category<select id="pitchCategory" required>
+<option value="">Choose</option>
+<option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option>
+<option>Social</option><option>Community</option><option>Culture</option><option>Volunteering</option>
+<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option>
+</select></label>
           <label>Description<textarea id="pitchDesc" required></textarea></label>
           <button class="btn btn-solid" type="submit">Send club pitch</button>
+        </form>
+      </div>
+
+      <div class="form-card" id="eventPitchFormBox">
+        <h3>Propose an event</h3>
+        <p>Have an event idea? Send it to the admin team. It will only appear publicly after approval.</p>
+        <form id="eventPitchForm" class="stack-form">
+          <label>Event title<input id="eventPitchTitle" required maxlength="100" placeholder="Math competition, workshop, meetup..."></label>
+          <label>Club / organizer<input id="eventPitchClub" required maxlength="100" placeholder="Math Club"></label>
+          <label>Date<input id="eventPitchDate" type="date" required></label>
+          <label>Time<input id="eventPitchTime" required maxlength="50" placeholder="4:00 PM"></label>
+          <label>Location<input id="eventPitchLocation" required maxlength="120" placeholder="Room 204"></label>
+          <label>Description<textarea id="eventPitchDesc" required maxlength="500" placeholder="What will happen at this event?"></textarea></label>
+          <button class="btn btn-solid" type="submit">Submit event proposal</button>
         </form>
       </div>
       <div class="form-card" id="contactFormBox">
