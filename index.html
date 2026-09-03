@@ -366,6 +366,63 @@
   .footer-links a:hover{color:var(--cream);}
   .footer-bottom{border-top:1px solid rgba(246,243,234,0.12); padding-top:22px; font-size:0.78rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
 
+
+  /* ---------- SOCIAL ---------- */
+  .social-section{
+    background:var(--cream);
+    border-top:1px solid var(--line);
+  }
+  .social-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:42px 46px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:30px;
+    box-shadow:var(--shadow);
+  }
+  .social-card h2{
+    color:var(--navy);
+    font-size:clamp(2rem,4vw,3rem);
+    margin-top:8px;
+  }
+  .social-card p{
+    max-width:620px;
+    color:var(--muted);
+    line-height:1.55;
+    margin:14px 0 0;
+  }
+  .instagram-link{
+    width:76px;
+    height:76px;
+    flex:0 0 76px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:20px;
+    background:var(--navy);
+    color:var(--cream);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .instagram-link:hover{
+    transform:translateY(-4px) scale(1.03);
+    background:var(--coral);
+    box-shadow:0 12px 28px rgba(20,43,79,0.2);
+  }
+  .instagram-link svg{
+    width:38px;
+    height:38px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+  }
+  .instagram-link .instagram-dot{
+    fill:currentColor;
+    stroke:none;
+  }
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:900px){
     .hero-grid{grid-template-columns:1fr;}
@@ -398,6 +455,7 @@
       <li><a href="#clubs">Clubs</a></li>
       <li><a href="#events">Events</a></li>
       <li><a href="#how">How it works</a></li>
+      <li><a href="#social">Social</a></li>
     </ul>
     <div class="nav-cta">
       <a href="#start" class="btn btn-sm">Start a club</a>
@@ -416,7 +474,7 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">Built by a student at GDGSR Ben Guerir</span>
+      <span class="eyebrow">Built by students at GDGSR Ben Guerir</span>
       <h1>Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
       <p class="sub">Selfstarters is where GDGSR Ben Guerir students go to see every team worth joining in one place — tech, math, chess, sports, and everything in between — and actually apply, not just wonder.</p>
       <div class="hero-actions">
@@ -511,7 +569,7 @@
         <h2>Start your own club at GDGSR Ben Guerir.</h2>
         <p>If you've got five people and an idea, Selfstarters will list it, run applications for it, and put your first meeting on the events portal.</p>
       </div>
-      <a href="mailto:hello@selfstarters.club" class="btn btn-solid">Pitch a new club</a>
+      <a href="mailto:selfstarters.admin@gmail.com" class="btn btn-solid">Pitch a new club</a>
     </div>
   </div>
 </section>
@@ -560,6 +618,33 @@
   </div>
 </section>
 
+
+<section class="social-section" id="social">
+  <div class="wrap">
+    <div class="social-card reveal">
+      <div>
+        <span class="eyebrow">Stay connected</span>
+        <h2>Follow us on Instagram</h2>
+        <p>See updates, announcements, events, and what the Selfstarters community is building at GDGSR Ben Guerir.</p>
+      </div>
+      <a
+        class="instagram-link"
+        href="https://www.instagram.com/gdgsr.clubs/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open GDGSR Clubs Instagram"
+        title="GDGSR Clubs Instagram"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <circle cx="17.3" cy="6.7" r="1.15" class="instagram-dot"></circle>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div class="footer-grid">
@@ -574,16 +659,16 @@
         </div>
         <div>
           <h5>For clubs</h5>
-          <ul><li><a href="#start">Start a club</a></li><li><a href="mailto:hello@selfstarters.club">Post an event</a></li></ul>
+          <ul><li><a href="#start">Start a club</a></li><li><a href="mailto:selfstarters.admin@gmail.com">Post an event</a></li></ul>
         </div>
         <div>
           <h5>Contact</h5>
-          <ul><li><a href="mailto:hello@selfstarters.club">hello@selfstarters.club</a></li><li><a href="#">@selfstarters</a></li></ul>
+          <ul><li><a href="mailto:selfstarters.admin@gmail.com">selfstarters.admin@gmail.com</a></li><li><a href="mailto:selfstarters.admin@gmail.com">selfstarters.admin@gmail.com</a></li></ul>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Selfstarters. Built by Ilyass Hachadi, a student at GDGSR Ben Guerir.</span>
+      <span>© 2026 Selfstarters. Built by Ilyass Hachadi and Amine Bouchtaoui, two students at GDGSR Ben Guerir.</span>
       <span class="mono">v1.0</span>
     </div>
   </div>
@@ -680,7 +765,11 @@
   .form-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow);}
   .form-card h3{font-size:1.3rem;color:var(--navy);margin-bottom:8px;}
   .form-card p{color:var(--muted);font-size:.9rem;line-height:1.5;}
-  @media(max-width:700px){.pitch-grid{grid-template-columns:1fr}.nav-user-text{display:none}.nav-cta .btn{padding:8px 11px;font-size:.7rem}}
+  @media(max-width:700px){
+    .social-card{padding:32px 24px; flex-direction:column; align-items:flex-start;}
+    .instagram-link{width:64px;height:64px;flex-basis:64px;}
+    .instagram-link svg{width:32px;height:32px;}
+.pitch-grid{grid-template-columns:1fr}.nav-user-text{display:none}.nav-cta .btn{padding:8px 11px;font-size:.7rem}}
 </style>
 
 <script type="module" src="./auth.js"></script>
