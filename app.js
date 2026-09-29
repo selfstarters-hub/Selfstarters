@@ -1,5 +1,6 @@
 import { db, SITE } from './firebase-init.js';
 import { requireAuth, getUser, getProfile, onReady } from './auth.js';
+import { t, catLabel, gradeOptionsHtml, getLang, onLangChange } from './i18n.js';
 import {
   collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, getDoc,
   getDocs, query, where, updateDoc, increment, serverTimestamp
@@ -34,11 +35,11 @@ document.getElementById('siteContactEmail') && (document.getElementById('siteCon
 /* ============ LIVE DATA ============ */
 onSnapshot(collection(db, 'clubs'), (snap) => {
   CLUBS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderTicker(); renderStats(); renderFilters(); renderClubs();
+  renderTicker(); renderStats(); renderHeroCards(); renderFilters(); renderClubs();
 });
 onSnapshot(collection(db, 'events'), (snap) => {
   EVENTS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderStats(); renderEvents();
+  renderEvents();
 });
 
 onReady(async (user) => {
@@ -55,8 +56,8 @@ onReady(async (user) => {
 function renderTicker(){
   const track = document.getElementById('tickerTrack');
   if(!track) return;
-  if(CLUBS.length === 0){ track.innerHTML = `<span>No teams listed yet — check back soon.</span>`; return; }
-  const items = CLUBS.map(c => `<span><b>${c.category}</b> — ${c.name}</span>`);
+  if(CLUBS.length === 0){ track.innerHTML = `<span>${t('ticker.empty')}</span>`; return; }
+  const items = CLUBS.map(c => `<span><b>${catLabel(c.category)}</b> — ${c.name}</span>`);
   track.innerHTML = items.concat(items).join('');
 }
 function animateCount(el, target){
@@ -67,10 +68,26 @@ function animateCount(el, target){
 }
 function renderStats(){
   const totalOpen = CLUBS.reduce((s, c) => s + Math.max(0, (c.total || 0) - (c.filled || 0)), 0);
-  const upcomingCount = EVENTS.filter(e => e.status === 'upcoming').length;
   animateCount(document.getElementById('statClubs'), CLUBS.length);
   animateCount(document.getElementById('statSpots'), totalOpen);
-  animateCount(document.getElementById('statEvents'), upcomingCount);
+}
+
+/* ============ HERO CLUB CARDS (real clubs, most-filled first) ============ */
+function renderHeroCards(){
+  const el = document.getElementById('heroCards');
+  if(!el) return;
+  const top = [...CLUBS].sort((a, b) => (b.filled || 0) - (a.filled || 0)).slice(0, 3);
+  el.innerHTML = top.map((c, i) => `
+    <div class="float-card fc${i + 1}" data-hero-club="${c.id}" role="button" tabindex="0">
+      <div class="patch" style="background:${colorFor(c.category)}">${iconFor(c.category)}</div>
+      <h4>${escapeHtml(c.name)}</h4>
+      <p>${t('hero.cardMeta', { filled: c.filled || 0, total: c.total || 0 })}${c.meets ? ' · ' + escapeHtml(c.meets) : ''}</p>
+    </div>`).join('');
+  el.querySelectorAll('[data-hero-club]').forEach(card => {
+    const open = () => openClubModal(card.dataset.heroClub);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+  });
 }
 
 /* ============ FILTERS / CLUBS ============ */
@@ -78,7 +95,7 @@ function renderFilters(){
   const el = document.getElementById('filters');
   if(!el) return;
   const cats = ["All", ...new Set(CLUBS.map(c => c.category))];
-  el.innerHTML = cats.map(c => `<button class="chip ${c === activeCategory ? 'active' : ''}" data-cat="${c}">${c}</button>`).join('');
+  el.innerHTML = cats.map(c => `<button class="chip ${c === activeCategory ? 'active' : ''}" data-cat="${c}">${c === 'All' ? t('filters.all') : catLabel(c)}</button>`).join('');
   el.querySelectorAll('.chip').forEach(btn => {
     btn.addEventListener('click', () => { activeCategory = btn.dataset.cat; renderFilters(); renderClubs(); });
   });
@@ -88,7 +105,7 @@ function renderClubs(){
   if(!grid) return;
   const list = activeCategory === "All" ? CLUBS : CLUBS.filter(c => c.category === activeCategory);
   if(list.length === 0){
-    grid.innerHTML = `<p class="empty-note">No teams here yet.</p>`;
+    grid.innerHTML = `<p class="empty-note">${t('clubs.empty')}</p>`;
     return;
   }
   grid.innerHTML = list.map(c => {
@@ -104,18 +121,18 @@ function renderClubs(){
         <div class="jersey">#${String(c.number || '00').padStart(2,'0')}</div>
       </div>
       <div>
-        <span class="cat" style="color:${color}">${c.category}</span>
+        <span class="cat" style="color:${color}">${catLabel(c.category)}</span>
         <h3>${escapeHtml(c.name)}</h3>
       </div>
       <p class="desc">${escapeHtml(c.desc || '')}</p>
       ${c.ratingCount ? `<div class="rating-line"><span class="stars">${starString(avg)}</span> ${avg.toFixed(1)} (${c.ratingCount})</div>` : ''}
       <div class="meta-row">
-        <span>MEETS · ${escapeHtml(c.meets || 'TBD')}</span>
-        <span>${full ? 'FULL — WAITLIST OPEN' : `${total - filled} SPOTS OPEN`}</span>
+        <span>${t('card.meets')} · ${escapeHtml(c.meets || t('card.tbd'))}</span>
+        <span>${full ? t('card.full') : t('card.spots', { n: total - filled })}</span>
         <div class="spots-bar ${full ? 'full' : ''}"><i style="width:${pct}%"></i></div>
       </div>
       <div class="card-actions">
-        <button class="btn btn-solid btn-sm" style="flex:1; background:${color}; border-color:${color};" data-view="${c.id}">View &amp; apply</button>
+        <button class="btn btn-solid btn-sm" style="flex:1; background:${color}; border-color:${color};" data-view="${c.id}">${t('card.view')}</button>
       </div>
     </div>`;
   }).join('');
@@ -141,38 +158,35 @@ async function openClubModal(id){
   modal.innerHTML = `
     <button class="modal-close" id="clubModalClose">✕</button>
     <div class="patch" style="background:${color}">${iconFor(c.category)}</div>
-    <span class="cat" style="color:${color}">${c.category}</span>
+    <span class="cat" style="color:${color}">${catLabel(c.category)}</span>
     <h3>${escapeHtml(c.name)}</h3>
     <p class="full-desc">${escapeHtml(c.full || c.desc || '')}</p>
     <div class="meta-grid">
-      <div><div class="k">Meets</div><div class="v">${escapeHtml(c.meets || 'TBD')}</div></div>
-      <div><div class="k">Location</div><div class="v">${escapeHtml(c.room || 'TBD')}</div></div>
-      <div><div class="k">Roster</div><div class="v">${filled} / ${total} filled</div></div>
-      <div><div class="k">Status</div><div class="v">${filled >= total && total > 0 ? 'Waitlist' : 'Open'}</div></div>
+      <div><div class="k">${t('m.meets')}</div><div class="v">${escapeHtml(c.meets || t('card.tbd'))}</div></div>
+      <div><div class="k">${t('m.location')}</div><div class="v">${escapeHtml(c.room || t('card.tbd'))}</div></div>
+      <div><div class="k">${t('m.roster')}</div><div class="v">${t('m.filled', { filled, total })}</div></div>
+      <div><div class="k">${t('m.status')}</div><div class="v">${filled >= total && total > 0 ? t('m.waitlist') : t('m.open')}</div></div>
     </div>
     <form class="stack-form" id="applyForm">
-      <label>Full name<input type="text" id="appName" required placeholder="Your name"></label>
-      <label>Grade
-        <select id="appGrade" required>
-          <option value="">Select grade</option>
-          <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
-        </select>
+      <label>${t('form.fullName')}<input type="text" id="appName" required placeholder="${t('form.yourName')}"></label>
+      <label>${t('form.grade')}
+        <select id="appGrade" required>${gradeOptionsHtml()}</select>
       </label>
-      <label>Why do you want to join?<textarea id="appReason" required placeholder="A sentence or two is plenty."></textarea></label>
-      <span class="form-note">Your application goes to the ${escapeHtml(c.name)} lead and to the site admin.</span>
-      <button type="submit" class="btn btn-solid" style="background:${color}; border-color:${color}; margin-top:6px;">Submit application</button>
+      <label>${t('form.why')}<textarea id="appReason" required placeholder="${t('form.whyPh')}"></textarea></label>
+      <span class="form-note">${t('form.note', { club: escapeHtml(c.name) })}</span>
+      <button type="submit" class="btn btn-solid" style="background:${color}; border-color:${color}; margin-top:6px;">${t('form.submitApp')}</button>
     </form>
     <div class="reviews-block" id="reviewsBlock">
-      <h4>Reviews</h4>
-      <div id="reviewsList"><p class="empty-note">Loading reviews…</p></div>
+      <h4>${t('rev.title')}</h4>
+      <div id="reviewsList"><p class="empty-note">${t('rev.loading')}</p></div>
       <form class="stack-form" id="reviewForm" style="margin-top:16px;">
-        <label>Your rating
+        <label>${t('rev.rating')}
           <div class="star-input" id="starInput">
             ${[1,2,3,4,5].map(n => `<button type="button" data-star="${n}">★</button>`).join('')}
           </div>
         </label>
-        <label>Your review<textarea id="reviewText" required placeholder="What's it actually like being in this club?"></textarea></label>
-        <button type="submit" class="btn btn-sm" style="align-self:flex-start;">Post review</button>
+        <label>${t('rev.your')}<textarea id="reviewText" required placeholder="${t('rev.ph')}"></textarea></label>
+        <button type="submit" class="btn btn-sm" style="align-self:flex-start;">${t('rev.post')}</button>
       </form>
     </div>
   `;
@@ -203,8 +217,8 @@ async function openClubModal(id){
         <button class="modal-close" id="clubModalClose2">✕</button>
         <div class="success-box">
           <div class="icon">✓</div>
-          <h3>Application received</h3>
-          <p>The ${escapeHtml(c.name)} lead will follow up by email with next steps.</p>
+          <h3>${t('app.done')}</h3>
+          <p>${t('app.doneP', { club: escapeHtml(c.name) })}</p>
         </div>`;
       document.getElementById('clubModalClose2').addEventListener('click', () => overlay.classList.remove('open'));
     });
@@ -222,7 +236,7 @@ async function openClubModal(id){
   document.getElementById('reviewForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const text = document.getElementById('reviewText').value.trim();
-    if(chosenStar === 0){ alert('Pick a star rating first.'); return; }
+    if(chosenStar === 0){ alert(t('rev.pickStar')); return; }
     requireAuth(async () => {
       const user = getUser();
       const p = getProfile();
@@ -247,7 +261,7 @@ async function loadReviews(clubId){
   if(!listEl) return;
   const snap = await getDocs(query(collection(db, 'reviews'), where('clubId', '==', clubId)));
   const reviews = snap.docs.map(d => d.data()).sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-  if(reviews.length === 0){ listEl.innerHTML = `<p class="empty-note">No reviews yet — be the first.</p>`; return; }
+  if(reviews.length === 0){ listEl.innerHTML = `<p class="empty-note">${t('rev.none')}</p>`; return; }
   listEl.innerHTML = reviews.map(r => `
     <div class="review-item">
       <div class="review-head"><span class="name">${escapeHtml(r.userName)}</span><span class="stars">${starString(r.rating)}</span></div>
@@ -261,7 +275,7 @@ clubOverlay?.addEventListener('click', (e) => { if(e.target === clubOverlay) clu
 /* ============ EVENTS ============ */
 function formatDate(iso){
   const d = new Date(iso + 'T00:00:00');
-  return { day: d.getDate(), mon: d.toLocaleString('en-US', { month: 'short' }).toUpperCase() };
+  return { day: d.getDate(), mon: d.toLocaleString(getLang() === 'fr' ? 'fr-FR' : 'en-US', { month: 'short' }).toUpperCase() };
 }
 function renderEvents(){
   const el = document.getElementById('eventsList');
@@ -269,7 +283,7 @@ function renderEvents(){
   const list = EVENTS.filter(e => e.status === activeEventsTab)
     .sort((a, b) => activeEventsTab === 'upcoming' ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date));
   el.className = 'events-list ' + (activeEventsTab === 'past' ? 'past' : '');
-  if(list.length === 0){ el.innerHTML = `<p class="empty-note">Nothing here yet.</p>`; return; }
+  if(list.length === 0){ el.innerHTML = `<p class="empty-note">${t('ev.none')}</p>`; return; }
   el.innerHTML = list.map(e => {
     const { day, mon } = formatDate(e.date);
     const going = myRsvps.has(e.id);
@@ -283,8 +297,8 @@ function renderEvents(){
         <div class="where">${escapeHtml(e.location)} — ${escapeHtml(e.desc || '')}</div>
       </div>
       <div>
-        ${activeEventsTab === 'upcoming' ? `<button class="rsvp-btn ${going ? 'going' : ''}" data-rsvp="${e.id}">${going ? '✓ Going' : 'RSVP'}</button>` : `<span class="tag-pill">Past</span>`}
-        <div class="attendee-count">${count} going</div>
+        ${activeEventsTab === 'upcoming' ? `<button class="rsvp-btn ${going ? 'going' : ''}" data-rsvp="${e.id}">${going ? t('ev.going') : t('ev.rsvp')}</button>` : `<span class="tag-pill">${t('ev.pastTag')}</span>`}
+        <div class="attendee-count">${t('ev.count', { n: count })}</div>
       </div>
     </div>`;
   }).join('');
@@ -338,7 +352,7 @@ document.getElementById('pitchForm')?.addEventListener('submit', (e) => {
 function showPitchSuccess(){
   const box = document.getElementById('pitchFormBox');
   if(!box) return;
-  box.innerHTML = `<div class="success-box"><div class="icon">✓</div><h3>Pitch sent</h3><p>An admin will review it and follow up by email.</p></div>`;
+  box.innerHTML = `<div class="success-box"><div class="icon">✓</div><h3>${t('pitch.done')}</h3><p>${t('pitch.doneP')}</p></div>`;
 }
 
 /* ============ PROPOSE AN EVENT (gated) ============ */
@@ -374,8 +388,8 @@ document.getElementById('eventPitchForm')?.addEventListener('submit', (e) => {
     if(box){
       box.innerHTML = `<div class="success-box">
         <div class="icon">✓</div>
-        <h3>Event proposal sent</h3>
-        <p>An admin will review your event and publish it if approved.</p>
+        <h3>${t('evp.done')}</h3>
+        <p>${t('evp.doneP')}</p>
       </div>`;
     }
   });
@@ -393,7 +407,7 @@ document.getElementById('contactForm')?.addEventListener('submit', (e) => {
       message, createdAt: serverTimestamp()
     });
     const box = document.getElementById('contactFormBox');
-    if(box) box.innerHTML = `<div class="success-box"><div class="icon">✓</div><h3>Message sent</h3><p>Thanks — we'll get back to you by email.</p></div>`;
+    if(box) box.innerHTML = `<div class="success-box"><div class="icon">✓</div><h3>${t('ct.done')}</h3><p>${t('ct.doneP')}</p></div>`;
   });
 });
 
@@ -409,3 +423,6 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 document.getElementById('menuToggle')?.addEventListener('click', () => {
   document.querySelector('.nav-links')?.classList.toggle('open');
 });
+
+/* ============ LANGUAGE CHANGE: re-render dynamic content ============ */
+onLangChange(() => { renderTicker(); renderHeroCards(); renderFilters(); renderClubs(); renderEvents(); });

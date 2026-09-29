@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Selfstarters — Find your team</title>
+<script>try{document.documentElement.dataset.lang=localStorage.getItem("ss_lang")==="fr"?"fr":"en"}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -443,6 +444,38 @@
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
+
+  /* ---------- LANGUAGE SWITCH ---------- */
+  html{overflow-x:clip;}
+  .lang-switch{
+    position:relative; display:grid; grid-template-columns:1fr 1fr; width:88px; height:38px; padding:0;
+    border:2px solid var(--navy); border-radius:999px; background:transparent; overflow:hidden;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; color:var(--navy);
+  }
+  .lang-thumb{
+    position:absolute; top:0; bottom:0; left:0; width:50%; border-radius:999px; background:var(--navy);
+    transition:transform .35s cubic-bezier(.65,0,.35,1);
+  }
+  html[data-lang="fr"] .lang-thumb{transform:translateX(100%);}
+  .lang-opt{position:relative; z-index:1; display:flex; align-items:center; justify-content:center; transition:color .35s ease;}
+  html[data-lang="en"] .lang-opt[data-l="en"], html[data-lang="fr"] .lang-opt[data-l="fr"]{color:var(--cream);}
+  body.lang-anim > section, body.lang-anim > footer{animation:langIn .4s cubic-bezier(.22,.8,.3,1) both;}
+  @keyframes langIn{from{opacity:0; transform:translateX(var(--sd,22px));} to{opacity:1; transform:none;}}
+  @media (max-width:700px){ .lang-switch{width:74px; height:32px; font-size:0.66rem;} }
+  @media (max-width:560px){ .nav-start{display:none;} }
+
+  /* ---------- OUR GOAL ---------- */
+  .goal{background:var(--paper); border-bottom:1px solid var(--line);}
+  .goal-grid{display:grid; grid-template-columns:0.8fr 1.2fr; gap:56px; align-items:start;}
+  .goal h2{font-size:clamp(2.6rem, 5.4vw, 4.4rem); color:var(--navy);}
+  .goal-copy p{margin:0; font-size:1.14rem; line-height:1.75; color:var(--ink); max-width:62ch;}
+  .goal-close{
+    display:block; margin-top:28px; padding-left:18px; border-left:4px solid var(--gold);
+    font-family:'Anton', sans-serif; text-transform:uppercase; letter-spacing:0.01em;
+    font-size:clamp(1.4rem, 2.6vw, 2rem); line-height:1.1; color:var(--coral);
+  }
+  @media (max-width:900px){ .goal-grid{grid-template-columns:1fr; gap:28px;} }
+  .float-card{cursor:pointer;}
   :focus-visible{outline:3px solid var(--coral); outline-offset:2px;}
 </style>
 </head>
@@ -452,20 +485,22 @@
   <nav class="wrap">
     <div class="logo"><span class="dot"></span>Selfstarters</div>
     <ul class="nav-links">
-      <li><a href="#clubs">Clubs</a></li>
-      <li><a href="#events">Events</a></li>
-      <li><a href="#how">How it works</a></li>
-      <li><a href="#social">Social</a></li>
+      <li><a href="#goal" data-i18n="nav.goal">Our goal</a></li>
+      <li><a href="#clubs" data-i18n="nav.clubs">Clubs</a></li>
+      <li><a href="#events" data-i18n="nav.events">Events</a></li>
+      <li><a href="#how" data-i18n="nav.how">How it works</a></li>
+      <li><a href="#social" data-i18n="nav.social">Social</a></li>
     </ul>
     <div class="nav-cta">
-      <a href="#start" class="btn btn-sm">Start a club</a>
+      <button id="langSwitch" class="lang-switch" type="button" role="switch" aria-checked="false" aria-label="Switch language" data-i18n-aria="lang.aria"><span class="lang-thumb"></span><span class="lang-opt" data-l="en">EN</span><span class="lang-opt" data-l="fr">FR</span></button>
+      <a href="#start" class="btn btn-sm nav-start" data-i18n="nav.start">Start a club</a>
       <div class="auth-nav" id="navGuest">
-        <button id="navLoginBtn" class="btn btn-solid btn-sm" type="button">Log in</button>
+        <button id="navLoginBtn" class="btn btn-solid btn-sm" type="button" data-i18n="nav.login">Log in</button>
       </div>
       <div class="nav-user-box" id="navUserBox">
         <div class="nav-avatar" id="navAvatar">S</div>
-        <a class="nav-user-text" href="./profile.html" aria-label="Open your profile"><span class="nav-user-name" id="navUserName">Student</span><span class="nav-user-role" id="navUserRole">Student</span></a>
-        <button id="navLogoutBtn" class="btn btn-sm" type="button">Log out</button>
+        <a class="nav-user-text" href="./profile.html" aria-label="Open your profile" data-i18n-aria="nav.profileAria"><span class="nav-user-name" id="navUserName">Student</span><span class="nav-user-role" id="navUserRole">Student</span></a>
+        <button id="navLogoutBtn" class="btn btn-sm" type="button" data-i18n="nav.logout">Log out</button>
       </div>
     </div>
   </nav>
@@ -474,47 +509,42 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">Built by students at GDGSR Ben Guerir</span>
-      <h1>Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
-      <p class="sub">Selfstarters is where GDGSR Ben Guerir students go to see every team worth joining in one place — tech, math, chess, sports, and everything in between — and actually apply, not just wonder.</p>
+      <span class="eyebrow" data-i18n="hero.eyebrow">Built by students for students</span>
+      <h1 data-i18n-html="hero.title">Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span></h1>
+      <p class="sub" data-i18n="hero.sub">Selfstarters is where GDGSR Ben Guerir students go to see every team worth joining in one place — tech, math, chess, sports, and everything in between — and actually apply, not just wonder.</p>
       <div class="hero-actions">
-        <a href="#clubs" class="btn btn-gold">Browse open teams</a>
-        <a href="#events" class="btn btn-ghost-light">See upcoming events</a>
+        <a href="#clubs" class="btn btn-gold" data-i18n="hero.browse">Browse open teams</a>
+        <a href="#events" class="btn btn-ghost-light" data-i18n="hero.seeEvents">See upcoming events</a>
       </div>
       <div class="stat-row">
-        <div class="stat"><div class="num" id="statClubs">0</div><div class="lbl">Active teams</div></div>
-        <div class="stat"><div class="num" id="statSpots">0</div><div class="lbl">Open spots</div></div>
-        <div class="stat"><div class="num" id="statEvents">0</div><div class="lbl">Events this month</div></div>
+        <div class="stat"><div class="num" id="statClubs">0</div><div class="lbl" data-i18n="stat.teams">Active teams</div></div>
+        <div class="stat"><div class="num" id="statSpots">0</div><div class="lbl" data-i18n="stat.spots">Open spots</div></div>
       </div>
     </div>
-    <div class="hero-visual">
-      <div class="float-card fc1">
-        <div class="patch" style="background:#E8543E;">◆</div>
-        <h4>Code &amp; Robotics</h4>
-        <p>18/25 filled · Tue/Thu</p>
-      </div>
-      <div class="float-card fc2">
-        <div class="patch" style="background:#142B4F;">♞</div>
-        <h4>Chess Club</h4>
-        <p>20/30 filled · Thu</p>
-      </div>
-      <div class="float-card fc3">
-        <div class="patch" style="background:#2F8F5B;">●</div>
-        <h4>Varsity Soccer</h4>
-        <p>Tryouts open · Daily</p>
-      </div>
-    </div>
+    <div class="hero-visual" id="heroCards"></div>
   </div>
   <div class="ticker">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
 </section>
 
+<section class="goal" id="goal">
+  <div class="wrap">
+    <div class="goal-grid reveal">
+      <h2 data-i18n="goal.title">Our Goal</h2>
+      <div class="goal-copy">
+        <p data-i18n="goal.body">Selfstarters is a community built for students who have ideas but lack the space to pursue them. Too often, students face a shortage of clubs, few chances to show what they can do, and limited access to the resources needed to turn an idea into something real. We started Selfstarters because we lived that problem ourselves, and instead of waiting for someone else to fix it, we decided to take action. Our goal is to give every student a place to start clubs, share their talents, and bring their ideas to life.</p>
+        <span class="goal-close" data-i18n="goal.close">Because great things begin when someone decides to start.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="clubs">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>Every team,<br>one roster.</h2>
-      <p class="desc">Filter by what you're into. Every card shows exactly how many spots are open, when they meet, and lets you apply on the spot.</p>
+      <h2 data-i18n-html="clubs.title">Every team,<br>one roster.</h2>
+      <p class="desc" data-i18n="clubs.desc">Filter by what you're into. Every card shows exactly how many spots are open, when they meet, and lets you apply on the spot.</p>
     </div>
     <div class="filters reveal" id="filters"></div>
     <div class="club-grid" id="clubGrid"></div>
@@ -524,12 +554,12 @@
 <section id="events" style="background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>Events portal</h2>
-      <p class="desc">Scrimmages, tournaments, competitions, and info sessions — RSVP so clubs know who's coming.</p>
+      <h2 data-i18n="ev.title">Events portal</h2>
+      <p class="desc" data-i18n="ev.desc">Scrimmages, tournaments, competitions, and info sessions — RSVP so clubs know who's coming.</p>
     </div>
     <div class="events-tabs reveal">
-      <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
-      <button class="tab-btn" data-tab="past">Past</button>
+      <button class="tab-btn active" data-tab="upcoming" data-i18n="ev.upcoming">Upcoming</button>
+      <button class="tab-btn" data-tab="past" data-i18n="ev.past">Past</button>
     </div>
     <div class="events-list reveal" id="eventsList"></div>
   </div>
@@ -538,24 +568,24 @@
 <section class="how" id="how">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>How joining<br>actually works</h2>
-      <p class="desc">No mystery sign-up sheets taped to a door. Three steps, all online.</p>
+      <h2 data-i18n-html="how.title">How joining<br>actually works</h2>
+      <p class="desc" data-i18n="how.desc">No mystery sign-up sheets taped to a door. Three steps, all online.</p>
     </div>
     <div class="steps reveal">
       <div class="step">
-        <span class="num">01 / BROWSE</span>
-        <h3>Find a team that fits</h3>
-        <p>Filter by category, check meeting times against your schedule, and see how many spots are actually left before you commit.</p>
+        <span class="num" data-i18n="s1.num">01 / BROWSE</span>
+        <h3 data-i18n="s1.h">Find a team that fits</h3>
+        <p data-i18n="s1.p">Filter by category, check meeting times against your schedule, and see how many spots are actually left before you commit.</p>
       </div>
       <div class="step">
-        <span class="num">02 / APPLY</span>
-        <h3>Tell them why you're in</h3>
-        <p>A short form goes straight to the club's student lead — your name, grade, and a couple sentences on why you want in.</p>
+        <span class="num" data-i18n="s2.num">02 / APPLY</span>
+        <h3 data-i18n="s2.h">Tell them why you're in</h3>
+        <p data-i18n="s2.p">A short form goes straight to the club's student lead — your name, grade, and a couple sentences on why you want in.</p>
       </div>
       <div class="step">
-        <span class="num">03 / SHOW UP</span>
-        <h3>Get confirmed &amp; go</h3>
-        <p>The lead follows up with next steps — tryout, intro meeting, or just "see you Tuesday." Then you're on the roster.</p>
+        <span class="num" data-i18n="s3.num">03 / SHOW UP</span>
+        <h3 data-i18n="s3.h">Get confirmed &amp; go</h3>
+        <p data-i18n="s3.p">The lead follows up with next steps — tryout, intro meeting, or just "see you Tuesday." Then you're on the roster.</p>
       </div>
     </div>
   </div>
@@ -565,11 +595,11 @@
   <div class="wrap">
     <div class="start-cta reveal">
       <div>
-        <span class="eyebrow" style="color:var(--navy-2);">Don't see your thing?</span>
-        <h2>Start your own club at GDGSR Ben Guerir.</h2>
-        <p>If you've got five people and an idea, Selfstarters will list it, run applications for it, and put your first meeting on the events portal.</p>
+        <span class="eyebrow" style="color:var(--navy-2);" data-i18n="start.eyebrow">Don't see your thing?</span>
+        <h2 data-i18n="start.title">Start your own club at GDGSR Ben Guerir.</h2>
+        <p data-i18n="start.p">If you've got five people and an idea, Selfstarters will list it, run applications for it, and put your first meeting on the events portal.</p>
       </div>
-      <a href="mailto:selfstarters.admin@gmail.com" class="btn btn-solid">Pitch a new club</a>
+      <a href="mailto:selfstarters.admin@gmail.com" class="btn btn-solid" data-i18n="start.btn">Pitch a new club</a>
     </div>
   </div>
 </section>
@@ -578,40 +608,40 @@
   <div class="wrap">
     <div class="pitch-grid">
       <div class="form-card" id="pitchFormBox">
-        <h3>Pitch a new club</h3>
-        <p>Have an idea? Send it to the Selfstarters admin team for review.</p>
+        <h3 data-i18n="pitch.title">Pitch a new club</h3>
+        <p data-i18n="pitch.p">Have an idea? Send it to the Selfstarters admin team for review.</p>
         <form id="pitchForm" class="stack-form">
-          <label>Club name<input id="pitchName" required></label>
-          <label>Category<select id="pitchCategory" required>
-<option value="">Choose</option>
-<option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option>
-<option>Social</option><option>Community</option><option>Culture</option><option>Volunteering</option>
-<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option>
+          <label><span data-i18n="pitch.name">Club name</span><input id="pitchName" required></label>
+          <label><span data-i18n="pitch.cat">Category</span><select id="pitchCategory" required>
+<option value="" data-i18n="pitch.choose">Choose</option>
+<option value="Tech" data-i18n="cat.Tech">Tech</option><option value="Academic" data-i18n="cat.Academic">Academic</option><option value="Sports" data-i18n="cat.Sports">Sports</option><option value="Games" data-i18n="cat.Games">Games</option><option value="Arts" data-i18n="cat.Arts">Arts</option>
+<option value="Social" data-i18n="cat.Social">Social</option><option value="Community" data-i18n="cat.Community">Community</option><option value="Culture" data-i18n="cat.Culture">Culture</option><option value="Volunteering" data-i18n="cat.Volunteering">Volunteering</option>
+<option value="Leadership" data-i18n="cat.Leadership">Leadership</option><option value="Entrepreneurship" data-i18n="cat.Entrepreneurship">Entrepreneurship</option><option value="Science" data-i18n="cat.Science">Science</option><option value="Other" data-i18n="cat.Other">Other</option>
 </select></label>
-          <label>Description<textarea id="pitchDesc" required></textarea></label>
-          <button class="btn btn-solid" type="submit">Send club pitch</button>
+          <label><span data-i18n="pitch.desc">Description</span><textarea id="pitchDesc" required></textarea></label>
+          <button class="btn btn-solid" type="submit" data-i18n="pitch.send">Send club pitch</button>
         </form>
       </div>
 
       <div class="form-card" id="eventPitchFormBox">
-        <h3>Propose an event</h3>
-        <p>Have an event idea? Send it to the admin team. It will only appear publicly after approval.</p>
+        <h3 data-i18n="evp.title">Propose an event</h3>
+        <p data-i18n="evp.p">Have an event idea? Send it to the admin team. It will only appear publicly after approval.</p>
         <form id="eventPitchForm" class="stack-form">
-          <label>Event title<input id="eventPitchTitle" required maxlength="100" placeholder="Math competition, workshop, meetup..."></label>
-          <label>Club / organizer<input id="eventPitchClub" required maxlength="100" placeholder="Math Club"></label>
-          <label>Date<input id="eventPitchDate" type="date" required></label>
-          <label>Time<input id="eventPitchTime" required maxlength="50" placeholder="4:00 PM"></label>
-          <label>Location<input id="eventPitchLocation" required maxlength="120" placeholder="Room 204"></label>
-          <label>Description<textarea id="eventPitchDesc" required maxlength="500" placeholder="What will happen at this event?"></textarea></label>
-          <button class="btn btn-solid" type="submit">Submit event proposal</button>
+          <label><span data-i18n="evp.name">Event title</span><input data-i18n-ph="evp.namePh" id="eventPitchTitle" required maxlength="100" placeholder="Math competition, workshop, meetup..."></label>
+          <label><span data-i18n="evp.club">Club / organizer</span><input data-i18n-ph="evp.clubPh" id="eventPitchClub" required maxlength="100" placeholder="Math Club"></label>
+          <label><span data-i18n="evp.date">Date</span><input id="eventPitchDate" type="date" required></label>
+          <label><span data-i18n="evp.time">Time</span><input data-i18n-ph="evp.timePh" id="eventPitchTime" required maxlength="50" placeholder="4:00 PM"></label>
+          <label><span data-i18n="evp.loc">Location</span><input data-i18n-ph="evp.locPh" id="eventPitchLocation" required maxlength="120" placeholder="Room 204"></label>
+          <label><span data-i18n="evp.desc">Description</span><textarea data-i18n-ph="evp.descPh" id="eventPitchDesc" required maxlength="500" placeholder="What will happen at this event?"></textarea></label>
+          <button class="btn btn-solid" type="submit" data-i18n="evp.send">Submit event proposal</button>
         </form>
       </div>
       <div class="form-card" id="contactFormBox">
-        <h3>Contact Selfstarters</h3>
-        <p>Questions, suggestions, or something we should fix? Send us a message.</p>
+        <h3 data-i18n="ct.title">Contact Selfstarters</h3>
+        <p data-i18n="ct.p">Questions, suggestions, or something we should fix? Send us a message.</p>
         <form id="contactForm" class="stack-form">
-          <label>Message<textarea id="contactMessage" required placeholder="Write your message..."></textarea></label>
-          <button class="btn btn-solid" type="submit">Send message</button>
+          <label><span data-i18n="ct.msg">Message</span><textarea id="contactMessage" required placeholder="Write your message..." data-i18n-ph="ct.ph"></textarea></label>
+          <button class="btn btn-solid" type="submit" data-i18n="ct.send">Send message</button>
         </form>
       </div>
     </div>
@@ -623,16 +653,16 @@
   <div class="wrap">
     <div class="social-card reveal">
       <div>
-        <span class="eyebrow">Stay connected</span>
-        <h2>Follow us on Instagram</h2>
-        <p>See updates, announcements, events, and what the Selfstarters community is building at GDGSR Ben Guerir.</p>
+        <span class="eyebrow" data-i18n="soc.eyebrow">Stay connected</span>
+        <h2 data-i18n="soc.title">Follow us on Instagram</h2>
+        <p data-i18n="soc.p">See updates, announcements, events, and what the Selfstarters community is building at GDGSR Ben Guerir.</p>
       </div>
       <a
         class="instagram-link"
         href="https://www.instagram.com/gdgsr.clubs/"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Open GDGSR Clubs Instagram"
+        aria-label="Open GDGSR Clubs Instagram" data-i18n-aria="soc.aria"
         title="GDGSR Clubs Instagram"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -650,25 +680,25 @@
     <div class="footer-grid">
       <div>
         <div class="logo"><span class="dot"></span>Selfstarters</div>
-        <p>A student-built platform for finding, joining, and running clubs at GDGSR Ben Guerir. No teachers required to get started.</p>
+        <p data-i18n="ft.about">A student-built platform for finding, joining, and running clubs at GDGSR Ben Guerir. No teachers required to get started.</p>
       </div>
       <div class="footer-links">
         <div>
-          <h5>Explore</h5>
-          <ul><li><a href="#clubs">All teams</a></li><li><a href="#events">Events portal</a></li><li><a href="#how">How it works</a></li></ul>
+          <h5 data-i18n="ft.explore">Explore</h5>
+          <ul><li><a href="#clubs" data-i18n="ft.teams">All teams</a></li><li><a href="#events" data-i18n="ft.events">Events portal</a></li><li><a href="#how" data-i18n="ft.how">How it works</a></li></ul>
         </div>
         <div>
-          <h5>For clubs</h5>
-          <ul><li><a href="#start">Start a club</a></li><li><a href="mailto:selfstarters.admin@gmail.com">Post an event</a></li></ul>
+          <h5 data-i18n="ft.forclubs">For clubs</h5>
+          <ul><li><a href="#start" data-i18n="ft.start">Start a club</a></li><li><a href="mailto:selfstarters.admin@gmail.com" data-i18n="ft.post">Post an event</a></li></ul>
         </div>
         <div>
-          <h5>Contact</h5>
+          <h5 data-i18n="ft.contact">Contact</h5>
           <ul><li><a href="mailto:selfstarters.admin@gmail.com">selfstarters.admin@gmail.com</a></li><li><a href="mailto:selfstarters.admin@gmail.com">selfstarters.admin@gmail.com</a></li></ul>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Selfstarters. Built by Ilyass Hachadi and Amine Bouchtaoui, two students at GDGSR Ben Guerir.</span>
+      <span data-i18n="ft.credit">© 2026 Selfstarters. Built by Ilyass Hachadi.</span>
       <span class="mono">v1.0</span>
     </div>
   </div>
@@ -686,41 +716,46 @@
   <div class="modal auth-modal">
     <button class="modal-close" id="authClose" type="button">✕</button>
     <div class="auth-brand">SELFSTARTERS</div>
-    <h3>Join the community</h3>
-    <p class="auth-sub">Browse as a guest. Sign in when you want to join, RSVP, review, pitch a club, or contact us.</p>
+    <h3 data-i18n="au.title">Join the community</h3>
+    <p class="auth-sub" data-i18n="au.sub">Browse as a guest. Sign in when you want to join, RSVP, review, pitch a club, or contact us.</p>
     <div class="auth-tabs">
-      <button class="auth-tab active" data-panel="loginPanel" type="button">Log in</button>
-      <button class="auth-tab" data-panel="signupPanel" type="button">Create account</button>
+      <button class="auth-tab active" data-panel="loginPanel" type="button" data-i18n="au.tabLogin">Log in</button>
+      <button class="auth-tab" data-panel="signupPanel" type="button" data-i18n="au.tabSignup">Create account</button>
     </div>
     <div class="auth-error" id="authError"></div>
     <div class="auth-panel active" id="loginPanel">
 <form id="loginForm" class="stack-form">
-  <label>Email<input id="loginEmail" type="email" autocomplete="email" required></label>
-  <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+  <label><span data-i18n="au.email">Email</span><input id="loginEmail" type="email" autocomplete="email" required></label>
+  <label><span data-i18n="au.password">Password</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
 
   <button
     type="button"
-    id="forgotPasswordBtn"
+    id="forgotPasswordBtn" data-i18n="au.forgot"
     style="border:0;background:none;color:var(--navy);font-size:.82rem;font-weight:700;text-decoration:underline;padding:2px 0;align-self:flex-start;"
   >
     Forgot password?
   </button>
 
-  <button class="btn btn-solid" type="submit">Log in</button>
+  <button class="btn btn-solid" type="submit" data-i18n="au.loginBtn">Log in</button>
 </form>
     </div>
     <div class="auth-panel" id="signupPanel">
       <form id="signupForm" class="stack-form">
-        <label>Full name<input id="signupName" type="text" autocomplete="name" required></label>
-        <label>Grade
+        <label><span data-i18n="form.fullName">Full name</span><input id="signupName" type="text" autocomplete="name" required></label>
+        <label><span data-i18n="form.grade">Grade</span>
           <select id="signupGrade" required>
-            <option value="">Select grade</option>
-            <option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+            <option value="" data-i18n="form.selectGrade">Select grade</option>
+            <option value="7th" data-i18n="grade.7">7th</option>
+            <option value="8th" data-i18n="grade.8">8th</option>
+            <option value="9th" data-i18n="grade.9">9th</option>
+            <option value="10th" data-i18n="grade.10">10th</option>
+            <option value="11th" data-i18n="grade.11">11th</option>
+            <option value="12th" data-i18n="grade.12">12th</option>
           </select>
         </label>
-        <label>Email<input id="signupEmail" type="email" autocomplete="email" required></label>
-        <label>Password<input id="signupPassword" type="password" minlength="6" autocomplete="new-password" required></label>
-        <button class="btn btn-solid" type="submit">Create account</button>
+        <label><span data-i18n="au.email">Email</span><input id="signupEmail" type="email" autocomplete="email" required></label>
+        <label><span data-i18n="au.password">Password</span><input id="signupPassword" type="password" minlength="6" autocomplete="new-password" required></label>
+        <button class="btn btn-solid" type="submit" data-i18n="au.signupBtn">Create account</button>
       </form>
     </div>
   </div>

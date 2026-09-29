@@ -1,4 +1,5 @@
 import { auth, db, ADMIN_EMAILS } from './firebase-init.js';
+import { t, gradeText, onLangChange } from './i18n.js';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -99,11 +100,11 @@ export async function sendResetEmail(email){
 
 function friendlyError(err){
   const code = err && err.code || '';
-  if(code.includes('email-already-in-use')) return 'That email already has an account — try logging in instead.';
-  if(code.includes('invalid-email')) return 'That email address doesn\'t look right.';
-  if(code.includes('weak-password')) return 'Password should be at least 6 characters.';
-  if(code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return 'Email or password is incorrect.';
-  return 'Something went wrong. Please try again.';
+  if(code.includes('email-already-in-use')) return t('err.exists');
+  if(code.includes('invalid-email')) return t('err.email');
+  if(code.includes('weak-password')) return t('err.weak');
+  if(code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return t('err.cred');
+  return t('err.generic');
 }
 
 /* ---------------- Modal wiring (index.html and admin.html both include the same markup) ---------------- */
@@ -137,12 +138,14 @@ function updateNavUI(){
     const roleEl = document.getElementById('navUserRole');
     if(avatarEl) avatarEl.textContent = initials;
     if(nameEl) nameEl.textContent = currentProfile.name;
-    if(roleEl) roleEl.textContent = currentProfile.role === 'admin' ? 'Admin' : `Grade ${currentProfile.grade || '—'}`;
+    if(roleEl) roleEl.textContent = currentProfile.role === 'admin' ? t('nav.admin') : gradeText(currentProfile.grade);
   } else {
     guestEl.style.display = 'flex';
     userEl.style.display = 'none';
   }
 }
+
+onLangChange(updateNavUI);
 
 function wireAuthModal(){
   const overlay = document.getElementById('authOverlay');
@@ -168,10 +171,10 @@ function wireAuthModal(){
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.textContent = 'Logging in…';
+    btn.disabled = true; btn.textContent = t('au.loggingIn');
     try{ await doSignIn(email, password); }
     catch(err){ setAuthError(friendlyError(err)); }
-    finally{ btn.disabled = false; btn.textContent = 'Log in'; }
+    finally{ btn.disabled = false; btn.textContent = t('au.loginBtn'); }
   });
 
   document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
@@ -182,18 +185,18 @@ function wireAuthModal(){
     const email = document.getElementById('signupEmail').value.trim();
     const password = document.getElementById('signupPassword').value;
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.textContent = 'Creating account…';
+    btn.disabled = true; btn.textContent = t('au.creating');
     try{ await doSignUp(name, email, password, grade); }
     catch(err){ setAuthError(friendlyError(err)); }
-    finally{ btn.disabled = false; btn.textContent = 'Create account'; }
+    finally{ btn.disabled = false; btn.textContent = t('au.signupBtn'); }
   });
 
   document.getElementById('forgotPasswordBtn')?.addEventListener('click', async () => {
     const email = document.getElementById('loginEmail')?.value.trim();
-    if(!email){ setAuthError('Enter your email first, then try again.'); return; }
+    if(!email){ setAuthError(t('au.needEmail')); return; }
     try{
       await sendResetEmail(email);
-      setAuthError('Password reset email sent. Check your inbox.');
+      setAuthError(t('au.resetSent'));
     }catch(err){ setAuthError(friendlyError(err)); }
   });
 
