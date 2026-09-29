@@ -769,6 +769,11 @@
   .auth-tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--line);}
   .auth-tab{border:0;background:transparent;padding:10px 12px;color:var(--muted);font-weight:700;border-bottom:3px solid transparent;}
   .auth-tab.active{color:var(--navy);border-bottom-color:var(--coral);}
+  .auth-done{display:none;text-align:center;padding:28px 0 14px;}
+  .auth-done-icon{width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .auth-done h3{margin:0;}
+  .auth-modal.is-done > :not(.modal-close):not(.auth-done){display:none;}
+  .auth-modal.is-done .auth-done{display:block;}
   .auth-panel{display:none;}
   .auth-panel.active{display:block;}
   .auth-error{display:none;background:#fff0ed;color:#a52f1f;border:1px solid #f0b0a5;border-radius:8px;padding:10px 12px;font-size:.85rem;margin-bottom:14px;}

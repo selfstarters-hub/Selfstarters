@@ -67,7 +67,6 @@ onAuthStateChanged(auth, async (user) => {
   if(currentUser && pendingAction){
     const fn = pendingAction;
     pendingAction = null;
-    closeAuthModal();
     fn();
   }
 });
@@ -112,7 +111,31 @@ export function openAuthModal(){
   const overlay = document.getElementById('authOverlay');
   if(overlay) overlay.classList.add('open');
 }
+let doneTimer = null;
+/** Replace the form with "Done, you are logged in", then close the window by itself. */
+function showAuthDone(){
+  const modal = document.querySelector('#authOverlay .auth-modal');
+  if(!modal) return;
+  let box = document.getElementById('authDone');
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'authDone';
+    box.className = 'auth-done';
+    box.setAttribute('role', 'status');
+    box.innerHTML = '<div class="auth-done-icon">✓</div><h3></h3>';
+    modal.appendChild(box);
+  }
+  box.querySelector('h3').textContent = t('au.done');
+  document.getElementById('loginForm')?.reset();
+  document.getElementById('signupForm')?.reset();
+  setAuthError('');
+  modal.classList.add('is-done');
+  clearTimeout(doneTimer);
+  doneTimer = setTimeout(closeAuthModal, 1600);
+}
 export function closeAuthModal(){
+  clearTimeout(doneTimer);
+  document.querySelector('#authOverlay .auth-modal')?.classList.remove('is-done');
   const overlay = document.getElementById('authOverlay');
   if(overlay) overlay.classList.remove('open');
   pendingAction = null;
@@ -172,7 +195,7 @@ function wireAuthModal(){
     const password = document.getElementById('loginPassword').value;
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = t('au.loggingIn');
-    try{ await doSignIn(email, password); }
+    try{ await doSignIn(email, password); showAuthDone(); }
     catch(err){ setAuthError(friendlyError(err)); }
     finally{ btn.disabled = false; btn.textContent = t('au.loginBtn'); }
   });
@@ -186,7 +209,7 @@ function wireAuthModal(){
     const password = document.getElementById('signupPassword').value;
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = t('au.creating');
-    try{ await doSignUp(name, email, password, grade); }
+    try{ await doSignUp(name, email, password, grade); showAuthDone(); }
     catch(err){ setAuthError(friendlyError(err)); }
     finally{ btn.disabled = false; btn.textContent = t('au.signupBtn'); }
   });
