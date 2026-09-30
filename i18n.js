@@ -22,7 +22,7 @@ const STR = {
 
     "nav.goal": "Our goal", "nav.clubs": "Clubs", "nav.events": "Events", "nav.how": "How it works", "nav.social": "Social",
     "nav.start": "Start a club", "nav.login": "Log in", "nav.logout": "Log out", "nav.admin": "Admin",
-    "nav.profileAria": "Open your profile",
+    "nav.profileAria": "Open your profile", "nav.myclubs": "My clubs",
 
     "hero.eyebrow": "Built by students for students",
     "hero.title": 'Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span>',
@@ -120,7 +120,7 @@ const STR = {
 
     "nav.goal": "Notre objectif", "nav.clubs": "Clubs", "nav.events": "Événements", "nav.how": "Comment ça marche", "nav.social": "Réseaux",
     "nav.start": "Créer un club", "nav.login": "Se connecter", "nav.logout": "Se déconnecter", "nav.admin": "Admin",
-    "nav.profileAria": "Ouvrir ton profil",
+    "nav.profileAria": "Ouvrir ton profil", "nav.myclubs": "Mes clubs",
 
     "hero.eyebrow": "Fait par des élèves, pour des élèves",
     "hero.title": 'Trouve ton<br>équipe.<span class="hl"> Pas<br>seulement<br>un club.</span>',

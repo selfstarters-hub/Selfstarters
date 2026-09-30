@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Selfstarters — My Clubs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#142B4F;--cream:#F6F3EA;--gold:#F2B705;--coral:#E8543E;--green:#2F8F5B;--wa:#25D366;--ink:#14161A;--line:#DCD5C4;--muted:#6B6456;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
+.wrap{max-width:1180px;margin:auto;padding:0 28px}h1,h2,h3{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;line-height:.95;margin:0}.mono{font-family:"JetBrains Mono",monospace}
+header{position:sticky;top:0;z-index:10;background:#f6f3eadd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font:400 1.45rem Anton;text-transform:uppercase}.dot{display:inline-block;width:10px;height:10px;background:var(--coral);border-radius:50%;margin-right:8px}
+.links{display:flex;gap:25px;list-style:none;font:600 .72rem "JetBrains Mono";text-transform:uppercase;padding:0;margin:0}.links .on{color:var(--coral)}.auth{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:700}.solid{background:var(--navy);color:#fff;border-color:var(--navy)}.btn[disabled]{opacity:.6;cursor:wait}
+.hero{background:var(--navy);color:#fff;padding:60px 0}.eyebrow{font:600 .72rem "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}.hero h1{font-size:clamp(3.2rem,8vw,6.5rem);margin:12px 0}.hero p{max-width:640px;color:#dce4ee;line-height:1.6;margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:36px 0 90px}
+.banner{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:20px;min-height:130px;padding:24px;border-radius:16px;color:#fff;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.banner:hover,.banner:focus-visible{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,43,79,.22)}.banner:focus-visible{outline:3px solid var(--gold)}
+.banner .ico{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:1.7rem;flex:none}
+.banner h3{font-size:2rem;margin:0 0 8px}.banner .sub{font:600 .66rem "JetBrains Mono";text-transform:uppercase;letter-spacing:.06em;opacity:.9}.banner .arrow{margin-left:auto;font-size:1.6rem;opacity:.85}
+.pill{display:inline-block;margin-top:8px;background:rgba(255,255,255,.22);padding:5px 10px;border-radius:999px;font:600 .62rem "JetBrains Mono";text-transform:uppercase}
+.state{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted)}.state .btn{margin-top:16px}
+/* big tab */
+.overlay{position:fixed;inset:0;background:rgba(20,22,26,.6);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:32px 16px;overflow:auto}.overlay.open{display:flex}
+.sheet{background:#fff;width:100%;max-width:900px;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.sheet-head{color:#fff;padding:34px 34px 28px;position:relative}.sheet-head h2{font-size:clamp(2.2rem,5vw,3.6rem);margin:8px 0}.sheet-head .sub{opacity:.92;font-size:.9rem}
+.close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.22);color:#fff;font-size:1.3rem;cursor:pointer}
+.sheet-body{padding:30px 34px 36px;display:grid;gap:22px}.block{border:1px solid var(--line);border-radius:14px;padding:20px}.block h3{font-size:1.4rem;margin-bottom:12px}
+.label{display:block;font:600 .63rem "JetBrains Mono";text-transform:uppercase;color:var(--muted);margin-bottom:6px}.text{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}.muted{color:var(--muted);line-height:1.5}
+.wa{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#eefbf3;border-color:#b6e5c7}.wa p{margin:0;flex:1;min-width:200px}
+.btn-wa{background:var(--wa);border-color:var(--wa);color:#fff;font-size:1rem;padding:14px 22px}.btn-wa:hover{filter:brightness(.95)}
+.field{margin-bottom:14px}.field input,.field textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:110px;resize:vertical}.hint{font-size:.78rem;color:var(--muted);margin-top:5px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.edit-tag{font:600 .62rem "JetBrains Mono";text-transform:uppercase;background:var(--gold);color:var(--navy);padding:5px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.notice{padding:11px 13px;border-radius:8px;background:#eef7f0;color:#23613b;font-size:.88rem}.notice.error{background:#fff1ef;color:var(--red)}.hidden{display:none!important}
+@media(max-width:850px){.links{display:none}.grid{grid-template-columns:1fr}.wrap{padding:0 18px}.sheet-head,.sheet-body{padding-left:20px;padding-right:20px}}
+</style></head><body>
+<header><nav class="wrap"><a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
+<ul class="links"><li><a href="./index.html">Home</a></li><li><a href="./clubs.html">Clubs</a></li><li><a href="./my-clubs.html" class="on">My clubs</a></li><li><a href="./profile.html">Profile</a></li></ul>
+<div class="auth" id="auth"></div></nav></header>
+
+<section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its announcements and join its WhatsApp group.</p></div></section>
+
+<main class="wrap"><div id="grid" class="grid"><div class="state">Loading your clubs...</div></div></main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet" id="sheet"></div></div>
+
+<script type="module">
+import{db}from"./firebase-init.js";
+import{onReady,doSignOut}from"./auth.js";
+import{collection,getDocs,getDoc,setDoc,doc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const colors={Tech:"#E8543E",Academic:"#142B4F",Sports:"#2F8F5B",Games:"#8A4FB8",Arts:"#D98A1E",Social:"#C94F8A",Community:"#3C7A89",Culture:"#9A6A3A",Volunteering:"#4E8B57",Leadership:"#6A5ACD",Entrepreneurship:"#B06A2B",Science:"#2878A8",Other:"#6B6456"};
+const icons={Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Social:"♥",Community:"◎",Culture:"◈",Volunteering:"✦",Leadership:"★",Entrepreneurship:"$",Science:"⚗",Other:"★"};
+// Only real WhatsApp invite links are accepted (also enforced in firestore.rules).
+const WA=/^https:\/\/(chat\.whatsapp\.com|whatsapp\.com\/channel)\/\S+$/i;
+
+let user=null,rows=[],current=null;
+
+onReady(async(u,p)=>{
+  if(!u){location.href="./index.html#login";return}
+  user=u;
+  $("auth").innerHTML=`<a class="mono" href="./profile.html">${esc(p?.name||u.email)}</a><button class="btn" id="logout">Log out</button>`;
+  $("logout").onclick=doSignOut;
+  await loadClubs();
+});
+
+async function loadClubs(){
+  try{
+    const snap=await getDocs(collection(db,"clubs"));
+    const all=await Promise.all(snap.docs.map(async d=>{
+      const club={id:d.id,...d.data()};
+      const isFounder=club.founderId===user.uid;
+      let role=isFounder?"Founder":null;
+      try{
+        const m=await getDoc(doc(db,"clubs",d.id,"members",user.uid));
+        if(m.exists()&&!isFounder)role=m.data().role||"Member";
+      }catch(e){console.warn("membership check failed",d.id,e)}
+      return role?{club,role,isFounder}:null;
+    }));
+    rows=all.filter(Boolean).sort((a,b)=>b.isFounder-a.isFounder||(a.club.name||"").localeCompare(b.club.name||""));
+    renderGrid();
+  }catch(e){
+    console.error(e);
+    $("grid").innerHTML=`<div class="state">Could not load your clubs. Please refresh the page.</div>`;
+  }
+}
+
+function renderGrid(){
+  if(!rows.length){
+    $("grid").innerHTML=`<div class="state"><h3>No clubs yet</h3><p>You are not a member of any club yet. Apply to one and it will show up here once accepted.</p><a class="btn solid" href="./clubs.html">Browse clubs</a></div>`;
+    return;
+  }
+  $("grid").innerHTML=rows.map((r,i)=>{
+    const c=r.club,col=colors[c.category]||colors.Other;
+    return`<button class="banner" style="background:${col}" data-i="${i}" aria-label="Open ${esc(c.name)}">
+      <span class="ico">${icons[c.category]||"★"}</span>
+      <span><h3>${esc(c.name)}</h3><span class="sub">${esc(c.category||"Other")}${c.meets?" · "+esc(c.meets):""}</span><br><span class="pill">${esc(r.role)}</span></span>
+      <span class="arrow">→</span></button>`}).join("");
+  document.querySelectorAll(".banner").forEach(b=>b.onclick=()=>openClub(+b.dataset.i));
+}
+
+/* ---------- the big tab ---------- */
+async function openClub(i){
+  current=rows[i];
+  $("overlay").classList.add("open");document.body.style.overflow="hidden";
+  $("sheet").innerHTML=`<div class="sheet-body"><div class="muted">Loading...</div></div>`;
+  let space={announcement:"",info:"",whatsappLink:""},err=null;
+  try{
+    const s=await getDoc(doc(db,"clubs",current.club.id,"space","main"));
+    if(s.exists())space={...space,...s.data()};
+  }catch(e){console.error(e);err="Could not load the club space. Make sure the latest firestore.rules are published."}
+  current.space=space;
+  renderSheet(err,false);
+}
+
+function renderSheet(err,editing){
+  const {club,role,isFounder,space}=current,col=colors[club.category]||colors.Other;
+  const hasLink=WA.test(space.whatsappLink||"");
+  const head=`<div class="sheet-head" style="background:${col}"><button class="close" id="closeBtn" aria-label="Close">✕</button>
+    <span class="pill">${esc(role)}</span><h2 id="sheetTitle">${esc(club.name)}</h2>
+    <div class="sub">${esc(club.category||"Other")}${club.meets?" · "+esc(club.meets):""}${club.room?" · "+esc(club.room):""}</div></div>`;
+
+  const waBlock=`<div class="block wa"><p><strong>WhatsApp group</strong><br><span class="muted">${hasLink?"Join the club's group chat to stay in the loop.":"The founder hasn't added the WhatsApp link yet."}</span></p>
+    ${hasLink?`<a class="btn btn-wa" id="waBtn" target="_blank" rel="noopener noreferrer" href="${esc(space.whatsappLink)}">Join WhatsApp group</a>`:""}</div>`;
+
+  const view=`${waBlock}
+    <div class="block"><h3>Announcement</h3><div class="text ${space.announcement?"":"muted"}">${esc(space.announcement||"No announcement yet.")}</div></div>
+    <div class="block"><h3>About this space</h3><div class="text ${space.info?"":"muted"}">${esc(space.info||"Nothing here yet.")}</div></div>
+    ${isFounder?`<div><button class="btn solid" id="editBtn">Edit this page</button></div>`:""}`;
+
+  const form=`<form id="spaceForm" class="block"><h3>Edit club space <span class="edit-tag">Founder</span></h3>
+    <div class="field"><label class="label" for="fWa">WhatsApp group link</label>
+      <input id="fWa" type="url" maxlength="200" placeholder="https://chat.whatsapp.com/..." value="${esc(space.whatsappLink||"")}">
+      <div class="hint">In WhatsApp: open your group → Group info → Invite via link → Copy link, then paste it here. Leave empty to remove it.</div></div>
+    <div class="field"><label class="label" for="fAnn">Announcement (max 500)</label><textarea id="fAnn" maxlength="500">${esc(space.announcement||"")}</textarea></div>
+    <div class="field"><label class="label" for="fInfo">About this space — schedule, rules, links (max 3000)</label><textarea id="fInfo" maxlength="3000" style="min-height:180px">${esc(space.info||"")}</textarea></div>
+    <div class="row"><button class="btn solid" type="submit" id="saveBtn">Save</button><button class="btn" type="button" id="cancelBtn">Cancel</button></div></form>`;
+
+  $("sheet").innerHTML=head+`<div class="sheet-body">${err?`<div class="notice error">${esc(err)}</div>`:""}<div id="msg"></div>${editing&&isFounder?form:view}</div>`;
+
+  $("closeBtn").onclick=closeSheet;
+  $("editBtn")?.addEventListener("click",()=>renderSheet(null,true));
+  $("cancelBtn")?.addEventListener("click",()=>renderSheet(null,false));
+  $("spaceForm")?.addEventListener("submit",saveSpace);
+}
+
+async function saveSpace(e){
+  e.preventDefault();
+  let link=$("fWa").value.trim();
+  if(/^(chat\.whatsapp\.com|whatsapp\.com\/channel)\//i.test(link))link="https://"+link;
+  if(link&&!WA.test(link)){
+    $("msg").innerHTML=`<div class="notice error">That doesn't look like a WhatsApp invite link. It should start with https://chat.whatsapp.com/</div>`;
+    return;
+  }
+  const data={whatsappLink:link,announcement:$("fAnn").value.trim(),info:$("fInfo").value.trim()};
+  const btn=$("saveBtn");btn.disabled=true;btn.textContent="Saving...";
+  try{
+    await setDoc(doc(db,"clubs",current.club.id,"space","main"),{...data,updatedAt:serverTimestamp(),updatedBy:user.uid});
+    current.space=data;
+    renderSheet(null,false);
+    $("msg").innerHTML=`<div class="notice">Saved. Members can see the changes now.</div>`;
+  }catch(err){
+    console.error(err);
+    $("msg").innerHTML=`<div class="notice error">Could not save. Only the club founder can edit, and the latest firestore.rules must be published.</div>`;
+    btn.disabled=false;btn.textContent="Save";
+  }
+}
+
+function closeSheet(){$("overlay").classList.remove("open");document.body.style.overflow="";current=null}
+$("overlay").addEventListener("click",e=>{if(e.target===$("overlay"))closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&current)closeSheet()});
+</script></body></html>

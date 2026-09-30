@@ -23,6 +23,20 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/clubs/$(clubId)).data.founderId == request.auth.uid;
     }
 
+    function isMember(clubId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid));
+    }
+
+    function validSpace(d) {
+      return d.keys().hasOnly(['announcement', 'info', 'whatsappLink', 'updatedAt', 'updatedBy'])
+        && d.announcement is string && d.announcement.size() <= 500
+        && d.info is string && d.info.size() <= 3000
+        && d.whatsappLink is string && d.whatsappLink.size() <= 200
+        && (d.whatsappLink == ''
+            || d.whatsappLink.matches('^https://(chat[.]whatsapp[.]com|whatsapp[.]com/channel)/.+$'));
+    }
+
     // USER PROFILES
     match /users/{userId} {
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
@@ -52,6 +66,14 @@ service cloud.firestore {
         );
 
       allow delete: if isAdmin();
+
+      // CLUB SPACE (My Clubs page) - private: members, founder and admin can read,
+      // only the founder (or admin) can write. Holds the WhatsApp link.
+      match /space/{docId} {
+        allow read: if isAdmin() || isFounder(clubId) || isMember(clubId);
+        allow create, update: if (isAdmin() || isFounder(clubId)) && validSpace(request.resource.data);
+        allow delete: if isAdmin() || isFounder(clubId);
+      }
 
       // CLUB MEMBERS
       match /members/{memberId} {

@@ -27,7 +27,7 @@ Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Social:"♥",Commu
 Culture:"◈",Volunteering:"✦",Leadership:"★",Entrepreneurship:"$",Science:"⚗",Other:"★"
 };let clubs=[],cat="All";
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-onReady((u,p)=>{auth.innerHTML=p?`<span class="mono">${esc(p.name||u.email)}</span><button class="btn" id="logout">Log out</button>`:`<a class="btn solid" href="./index.html#login">Log in</a>`;if(p)logout.onclick=doSignOut});
+onReady((u,p)=>{auth.innerHTML=p?`<span class="mono">${esc(p.name||u.email)}</span><a class="btn solid" href="./my-clubs.html">My clubs</a><button class="btn" id="logout">Log out</button>`:`<a class="btn solid" href="./index.html#login">Log in</a>`;if(p)logout.onclick=doSignOut});
 onSnapshot(collection(db,"clubs"),s=>{clubs=s.docs.map(d=>({id:d.id,...d.data()}));renderFilters();render()});
 search.oninput=render;
 function renderFilters(){let a=["All",...new Set(clubs.map(c=>c.category).filter(Boolean))];filters.innerHTML=a.map(x=>`<button class="chip ${x==cat?"active":""}" data-cat="${esc(x)}">${esc(x)}</button>`).join("");document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{cat=b.dataset.cat;renderFilters();render()})}
