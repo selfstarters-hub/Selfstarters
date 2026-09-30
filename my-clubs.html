@@ -41,6 +41,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 
 <main class="wrap"><div id="grid" class="grid"><div class="state">Loading your clubs...</div></div></main>
 
+<div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v3</div>
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet" id="sheet"></div></div>
 
 <script type="module">
@@ -56,6 +57,7 @@ const icons={Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Socia
 const WA=/^https:\/\/(chat\.whatsapp\.com|whatsapp\.com\/channel)\/\S+$/i;
 
 let user=null,rows=[],current=null;
+console.log("my-clubs v3 loaded");
 
 onReady(async(u,p)=>{
   if(!u){location.href="./index.html#login";return}
@@ -109,7 +111,7 @@ async function openClub(i){
   try{
     const s=await getDoc(doc(db,"clubs",current.club.id,"space","main"));
     if(s.exists())space={...space,...s.data()};
-  }catch(e){console.error(e);err="Could not load the club space. Make sure the latest firestore.rules are published."}
+  }catch(e){console.error(e);err="Could not load the club space ("+(e.code||e.message)+"). "+(e.code==="permission-denied"?"Firestore rules are blocking this read: publish the latest firestore.rules to project selfstarters-6cf59.":"")}
   current.space=space;
   renderSheet(err,false);
 }
