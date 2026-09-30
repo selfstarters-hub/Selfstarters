@@ -162,7 +162,10 @@ async function saveSpace(e){
     $("msg").innerHTML=`<div class="notice">Saved. Members can see the changes now.</div>`;
   }catch(err){
     console.error(err);
-    $("msg").innerHTML=`<div class="notice error">Could not save. Only the club founder can edit, and the latest firestore.rules must be published.</div>`;
+    const why=err&&err.code==="permission-denied"
+      ?"Permission denied. Publish the latest firestore.rules in Firebase (Firestore → Rules → Publish), then try again."
+      :"Could not save ("+esc(err&&(err.code||err.message)||"unknown error")+").";
+    $("msg").innerHTML=`<div class="notice error">${why}</div>`;
     btn.disabled=false;btn.textContent="Save";
   }
 }
