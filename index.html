@@ -490,6 +490,7 @@
       <li><a href="#events" data-i18n="nav.events">Events</a></li>
       <li><a href="#how" data-i18n="nav.how">How it works</a></li>
       <li><a href="#social" data-i18n="nav.social">Social</a></li>
+      <li class="nav-mobile-only"><a href="./my-clubs.html" data-i18n="nav.myclubs">My clubs</a></li>
     </ul>
     <div class="nav-cta">
       <button id="langSwitch" class="lang-switch" type="button" role="switch" aria-checked="false" aria-label="Switch language" data-i18n-aria="lang.aria"><span class="lang-thumb"></span><span class="lang-opt" data-l="en">EN</span><span class="lang-opt" data-l="fr">FR</span></button>
@@ -503,6 +504,7 @@
         <a href="./my-clubs.html" class="btn btn-solid btn-sm" data-i18n="nav.myclubs">My clubs</a>
         <button id="navLogoutBtn" class="btn btn-sm" type="button" data-i18n="nav.logout">Log out</button>
       </div>
+      <button id="menuToggle" class="menu-toggle" type="button" aria-label="Menu">&#9776;</button>
     </div>
   </nav>
 </header>
@@ -816,5 +818,7 @@
 <script type="module" src="./auth.js"></script>
 <script type="module" src="./app.js"></script>
 
+<link rel="stylesheet" href="./mobile.css">
+<script>document.querySelectorAll(".nav-links a").forEach(function(a){a.addEventListener("click",function(){document.querySelector(".nav-links").classList.remove("open")})})</script>
 </body>
 </html>
