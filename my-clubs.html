@@ -47,15 +47,15 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 <section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its page, members and WhatsApp group. Founders can manage everything from here.</p></div></section>
 
 <main class="wrap"><div id="grid" class="grid"><div class="state">Loading your clubs...</div></div></main>
-<div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v4</div>
+<div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v5</div>
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet" id="sheet"></div></div>
 
 <script type="module">
 import{db}from"./firebase-init.js";
 import{onReady,doSignOut}from"./auth.js";
-import{collection,getDocs,getDoc,setDoc,updateDoc,doc,query,where,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-console.log("my-clubs v4 loaded");
+import{collection,getDocs,getDoc,setDoc,updateDoc,deleteDoc,doc,query,where,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+console.log("my-clubs v5 loaded");
 
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -208,7 +208,10 @@ function settingsTab(){
     <div class="field"><label class="label" for="sFull">Full description</label><textarea id="sFull" maxlength="1500">${esc(c.full||c.desc||"")}</textarea></div>
     <div class="field"><label class="label" for="sMeets">Meeting time</label><input id="sMeets" maxlength="100" value="${esc(c.meets||"")}"></div>
     <div class="field"><label class="label" for="sRoom">Location</label><input id="sRoom" maxlength="150" value="${esc(c.room||"")}"></div>
-    <button class="btn solid" type="submit">Save club</button></form>`;
+    <button class="btn solid" type="submit">Save club</button></form>
+    <div class="block" style="border-color:#e0b1aa;background:#fff8f7"><h3 style="color:var(--red)">Danger zone</h3>
+    <p class="small">Deleting the club permanently removes its page, members list, club space (including the WhatsApp link) and join requests. This cannot be undone.</p>
+    <button class="btn danger" id="deleteClubBtn">Delete this club</button></div>`;
 }
 
 /* ---- tab: transfer founder ---- */
@@ -231,6 +234,7 @@ function wire(){
   document.querySelectorAll("[data-save-role]").forEach(b=>b.onclick=()=>saveRole(b.dataset.saveRole));
   document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>removeMember(b.dataset.remove));
   $("transferBtn")?.addEventListener("click",transferFounder);
+  $("deleteClubBtn")?.addEventListener("click",deleteClub);
 }
 
 async function saveSpace(e){
@@ -320,6 +324,29 @@ async function transferFounder(){
     });
     closeSheet();await loadClubs();
   }catch(err){console.error(err);showMsg(err.message||"Could not transfer Founder role.",true)}
+}
+
+async function deleteClub(){
+  const c=current.club,id=c.id;
+  const typed=prompt(`This permanently deletes "${c.name}" with its members, club space and join requests. It cannot be undone.\n\nType the club name to confirm:`);
+  if(typed===null)return;
+  if(typed.trim()!==(c.name||"").trim()){showMsg("The name didn't match. Nothing was deleted.",true);return}
+  const btn=$("deleteClubBtn");btn.disabled=true;btn.textContent="Deleting...";
+  try{
+    // Sub-documents first: the rules only allow the founder while the club document still exists.
+    const [mem,apps]=await Promise.all([
+      getDocs(collection(db,"clubs",id,"members")),
+      getDocs(query(collection(db,"applications"),where("clubId","==",id)))]);
+    await Promise.all([...mem.docs,...apps.docs].map(d=>deleteDoc(d.ref)));
+    try{await deleteDoc(doc(db,"clubs",id,"space","main"))}catch(e){console.warn(e)}
+    await deleteDoc(doc(db,"clubs",id));
+    closeSheet();await loadClubs();
+    alert("Club deleted.");
+  }catch(err){
+    console.error(err);
+    showMsg(err&&err.code==="permission-denied"?"Permission denied. Publish the latest firestore.rules in Firebase (Firestore → Rules → Publish), then try again.":"Could not delete the club ("+(err&&(err.code||err.message)||"unknown error")+"). Some parts may already be removed; try again.",true);
+    btn.disabled=false;btn.textContent="Delete this club";
+  }
 }
 
 function closeSheet(){$("overlay").classList.remove("open");document.body.style.overflow="";current=null;if(location.search)history.replaceState(null,"","./my-clubs.html")}
