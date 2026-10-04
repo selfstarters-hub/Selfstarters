@@ -5,60 +5,68 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#142B4F;--cream:#F6F3EA;--gold:#F2B705;--coral:#E8543E;--green:#2F8F5B;--wa:#25D366;--ink:#14161A;--line:#DCD5C4;--muted:#6B6456;--red:#b42318}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"Work Sans",sans-serif}a{text-decoration:none;color:inherit}button,input,textarea,select{font:inherit}
 .wrap{max-width:1180px;margin:auto;padding:0 28px}h1,h2,h3{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;line-height:.95;margin:0}.mono{font-family:"JetBrains Mono",monospace}
 header{position:sticky;top:0;z-index:10;background:#f6f3eadd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font:400 1.45rem Anton;text-transform:uppercase}.dot{display:inline-block;width:10px;height:10px;background:var(--coral);border-radius:50%;margin-right:8px}
 .links{display:flex;gap:25px;list-style:none;font:600 .72rem "JetBrains Mono";text-transform:uppercase;padding:0;margin:0}.links .on{color:var(--coral)}.auth{display:flex;align-items:center;gap:8px}
 .btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:700}.solid{background:var(--navy);color:#fff;border-color:var(--navy)}.btn[disabled]{opacity:.6;cursor:wait}
+.danger{background:#fff1ef;color:var(--red);border-color:#e0b1aa}.green{background:#edf8f1;color:#23613b;border-color:#b8d9c1}
 .hero{background:var(--navy);color:#fff;padding:60px 0}.eyebrow{font:600 .72rem "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}.hero h1{font-size:clamp(3.2rem,8vw,6.5rem);margin:12px 0}.hero p{max-width:640px;color:#dce4ee;line-height:1.6;margin:0}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:36px 0 90px}
-.banner{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:20px;min-height:130px;padding:24px;border-radius:16px;color:#fff;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.banner{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:20px;min-height:130px;padding:24px;border-radius:16px;color:#fff;transition:transform .15s,box-shadow .15s}
 .banner:hover,.banner:focus-visible{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,43,79,.22)}.banner:focus-visible{outline:3px solid var(--gold)}
 .banner .ico{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:1.7rem;flex:none}
 .banner h3{font-size:2rem;margin:0 0 8px}.banner .sub{font:600 .66rem "JetBrains Mono";text-transform:uppercase;letter-spacing:.06em;opacity:.9}.banner .arrow{margin-left:auto;font-size:1.6rem;opacity:.85}
 .pill{display:inline-block;margin-top:8px;background:rgba(255,255,255,.22);padding:5px 10px;border-radius:999px;font:600 .62rem "JetBrains Mono";text-transform:uppercase}
 .state{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted)}.state .btn{margin-top:16px}
-/* big tab */
-.overlay{position:fixed;inset:0;background:rgba(20,22,26,.6);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:32px 16px;overflow:auto}.overlay.open{display:flex}
-.sheet{background:#fff;width:100%;max-width:900px;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35)}
-.sheet-head{color:#fff;padding:34px 34px 28px;position:relative}.sheet-head h2{font-size:clamp(2.2rem,5vw,3.6rem);margin:8px 0}.sheet-head .sub{opacity:.92;font-size:.9rem}
-.close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.22);color:#fff;font-size:1.3rem;cursor:pointer}
-.sheet-body{padding:30px 34px 36px;display:grid;gap:22px}.block{border:1px solid var(--line);border-radius:14px;padding:20px}.block h3{font-size:1.4rem;margin-bottom:12px}
-.label{display:block;font:600 .63rem "JetBrains Mono";text-transform:uppercase;color:var(--muted);margin-bottom:6px}.text{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}.muted{color:var(--muted);line-height:1.5}
+/* full club page */
+.overlay{position:fixed;inset:0;background:var(--cream);z-index:50;display:none;overflow:auto}.overlay.open{display:block}
+.sheet{background:#fff;max-width:1000px;margin:0 auto;min-height:100%;box-shadow:0 0 60px rgba(20,43,79,.15)}
+.sheet-head{color:#fff;padding:26px 34px 30px;position:relative}.sheet-head h2{font-size:clamp(2.4rem,6vw,4.2rem);margin:12px 0 8px}.sheet-head .sub{opacity:.92;font-size:.9rem}
+.back{border:0;background:rgba(255,255,255,.22);color:#fff;padding:10px 16px;border-radius:999px;font:600 .72rem "JetBrains Mono";text-transform:uppercase;cursor:pointer}.back:hover{background:rgba(255,255,255,.34)}
+.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);padding:0 24px;background:#fff;position:sticky;top:0;z-index:3;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;padding:16px 14px;font:600 .72rem "JetBrains Mono";text-transform:uppercase;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}.tab.active{color:var(--navy);border-color:var(--coral)}
+.count{background:var(--coral);color:#fff;border-radius:999px;padding:1px 7px;margin-left:6px;font-size:.62rem}
+.sheet-body{padding:28px 34px 60px;display:grid;gap:22px;align-content:start}.block{border:1px solid var(--line);border-radius:14px;padding:20px}.block h3{font-size:1.4rem;margin-bottom:12px}
+.label{display:block;font:600 .63rem "JetBrains Mono";text-transform:uppercase;color:var(--muted);margin-bottom:6px}.text{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}.muted{color:var(--muted);line-height:1.5}.small{font-size:.82rem;color:var(--muted)}
 .wa{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#eefbf3;border-color:#b6e5c7}.wa p{margin:0;flex:1;min-width:200px}
 .btn-wa{background:var(--wa);border-color:var(--wa);color:#fff;font-size:1rem;padding:14px 22px}.btn-wa:hover{filter:brightness(.95)}
-.field{margin-bottom:14px}.field input,.field textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:110px;resize:vertical}.hint{font-size:.78rem;color:var(--muted);margin-top:5px}
-.row{display:flex;gap:8px;flex-wrap:wrap}.edit-tag{font:600 .62rem "JetBrains Mono";text-transform:uppercase;background:var(--gold);color:var(--navy);padding:5px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
-.notice{padding:11px 13px;border-radius:8px;background:#eef7f0;color:#23613b;font-size:.88rem}.notice.error{background:#fff1ef;color:var(--red)}.hidden{display:none!important}
-@media(max-width:850px){.links{display:none}.grid{grid-template-columns:1fr}.wrap{padding:0 18px}.sheet-head,.sheet-body{padding-left:20px;padding-right:20px}}
-</style><link rel="stylesheet" href="./mobile.css">
-</head><body>
+.field{margin-bottom:14px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:110px;resize:vertical}.hint{font-size:.78rem;color:var(--muted);margin-top:5px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.edit-tag{font:600 .62rem "JetBrains Mono";text-transform:uppercase;background:var(--gold);color:var(--navy);padding:5px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.person{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:15px 0;border-top:1px solid var(--line)}.person:first-of-type{border-top:0}.person .name{font-weight:800}
+.tag{display:inline-block;margin-top:5px;background:#eef2f7;color:var(--navy);padding:5px 9px;border-radius:999px;font:600 .62rem "JetBrains Mono";text-transform:uppercase}.person select{padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.warn{background:#fff8df;border:1px solid #ead58a;padding:12px;border-radius:9px;margin:14px 0;line-height:1.5}
+.notice{padding:11px 13px;border-radius:8px;background:#eef7f0;color:#23613b;font-size:.88rem}.notice.error{background:#fff1ef;color:var(--red)}
+@media(max-width:850px){.links{display:none}.grid{grid-template-columns:1fr}.wrap{padding:0 18px}.sheet-head,.sheet-body{padding-left:18px;padding-right:18px}.tabs{padding:0 8px}.person{grid-template-columns:1fr}}
+</style></head><body>
 <header><nav class="wrap"><a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
 <ul class="links"><li><a href="./index.html">Home</a></li><li><a href="./clubs.html">Clubs</a></li><li><a href="./my-clubs.html" class="on">My clubs</a></li><li><a href="./profile.html">Profile</a></li></ul>
 <div class="auth" id="auth"></div></nav></header>
 
-<section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its announcements and join its WhatsApp group.</p></div></section>
+<section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its page, members and WhatsApp group. Founders can manage everything from here.</p></div></section>
 
 <main class="wrap"><div id="grid" class="grid"><div class="state">Loading your clubs...</div></div></main>
+<div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v4</div>
 
-<div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v3</div>
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet" id="sheet"></div></div>
 
 <script type="module">
 import{db}from"./firebase-init.js";
 import{onReady,doSignOut}from"./auth.js";
-import{collection,getDocs,getDoc,setDoc,doc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{collection,getDocs,getDoc,setDoc,updateDoc,doc,query,where,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+console.log("my-clubs v4 loaded");
 
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const colors={Tech:"#E8543E",Academic:"#142B4F",Sports:"#2F8F5B",Games:"#8A4FB8",Arts:"#D98A1E",Social:"#C94F8A",Community:"#3C7A89",Culture:"#9A6A3A",Volunteering:"#4E8B57",Leadership:"#6A5ACD",Entrepreneurship:"#B06A2B",Science:"#2878A8",Other:"#6B6456"};
 const icons={Tech:"◆",Academic:"∑",Sports:"●",Games:"♞",Arts:"✎",Social:"♥",Community:"◎",Culture:"◈",Volunteering:"✦",Leadership:"★",Entrepreneurship:"$",Science:"⚗",Other:"★"};
+const CATS=Object.keys(colors);
+const ROLES=["Member","Vice President","Developer","Secretary","Treasurer","Special"];
 // Only real WhatsApp invite links are accepted (also enforced in firestore.rules).
 const WA=/^https:\/\/(chat\.whatsapp\.com|whatsapp\.com\/channel)\/\S+$/i;
 
-let user=null,rows=[],current=null;
-console.log("my-clubs v3 loaded");
+let user=null,rows=[],current=null,msgTimer=null;
 
 onReady(async(u,p)=>{
   if(!u){location.href="./index.html#login";return}
@@ -66,6 +74,8 @@ onReady(async(u,p)=>{
   $("auth").innerHTML=`<a class="mono" href="./profile.html">${esc(p?.name||u.email)}</a><button class="btn" id="logout">Log out</button>`;
   $("logout").onclick=doSignOut;
   await loadClubs();
+  const o=new URLSearchParams(location.search).get("open");
+  if(o){const i=rows.findIndex(r=>r.club.id===o);if(i>=0)openClub(i)}
 });
 
 async function loadClubs(){
@@ -103,77 +113,217 @@ function renderGrid(){
   document.querySelectorAll(".banner").forEach(b=>b.onclick=()=>openClub(+b.dataset.i));
 }
 
-/* ---------- the big tab ---------- */
+/* ================= full club page ================= */
 async function openClub(i){
-  current=rows[i];
-  $("overlay").classList.add("open");document.body.style.overflow="hidden";
+  current={...rows[i],idx:i,tab:"space",space:{announcement:"",info:"",whatsappLink:""},members:[],applications:[],err:null};
+  $("overlay").classList.add("open");document.body.style.overflow="hidden";$("overlay").scrollTop=0;
   $("sheet").innerHTML=`<div class="sheet-body"><div class="muted">Loading...</div></div>`;
-  let space={announcement:"",info:"",whatsappLink:""},err=null;
-  try{
-    const s=await getDoc(doc(db,"clubs",current.club.id,"space","main"));
-    if(s.exists())space={...space,...s.data()};
-  }catch(e){console.error(e);err="Could not load the club space ("+(e.code||e.message)+"). "+(e.code==="permission-denied"?"Firestore rules are blocking this read: publish the latest firestore.rules to project selfstarters-6cf59.":"")}
-  current.space=space;
-  renderSheet(err,false);
+  await fetchAll();
+  renderSheet(false);
 }
 
-function renderSheet(err,editing){
-  const {club,role,isFounder,space}=current,col=colors[club.category]||colors.Other;
-  const hasLink=WA.test(space.whatsappLink||"");
-  const head=`<div class="sheet-head" style="background:${col}"><button class="close" id="closeBtn" aria-label="Close">✕</button>
-    <span class="pill">${esc(role)}</span><h2 id="sheetTitle">${esc(club.name)}</h2>
-    <div class="sub">${esc(club.category||"Other")}${club.meets?" · "+esc(club.meets):""}${club.room?" · "+esc(club.room):""}</div></div>`;
+async function fetchAll(){
+  const id=current.club.id;current.err=null;
+  try{const c=await getDoc(doc(db,"clubs",id));if(c.exists())current.club={id,...c.data()}}catch(e){console.warn(e)}
+  try{const s=await getDoc(doc(db,"clubs",id,"space","main"));if(s.exists())current.space={announcement:"",info:"",whatsappLink:"",...s.data()}}
+  catch(e){console.error(e);current.err="Could not load the club space ("+(e.code||e.message)+"). "+(e.code==="permission-denied"?"Publish the latest firestore.rules to project selfstarters-6cf59.":"")}
+  try{const m=await getDocs(collection(db,"clubs",id,"members"));current.members=m.docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.error(e)}
+  if(current.isFounder){
+    try{const a=await getDocs(query(collection(db,"applications"),where("clubId","==",id)));current.applications=a.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.status==="pending")}
+    catch(e){console.error(e)}
+  }
+}
+async function reload(text){
+  await fetchAll();rows[current.idx].club=current.club;renderGrid();renderSheet(false);
+  if(text)showMsg(text);
+}
+function showMsg(text,error=false){
+  const m=$("msg");if(!m)return;
+  m.innerHTML=`<div class="notice ${error?"error":""}">${esc(text)}</div>`;
+  clearTimeout(msgTimer);msgTimer=setTimeout(()=>{const x=$("msg");if(x)x.innerHTML=""},4500);
+}
 
-  const waBlock=`<div class="block wa"><p><strong>WhatsApp group</strong><br><span class="muted">${hasLink?"Join the club's group chat to stay in the loop.":"The founder hasn't added the WhatsApp link yet."}</span></p>
-    ${hasLink?`<a class="btn btn-wa" id="waBtn" target="_blank" rel="noopener noreferrer" href="${esc(space.whatsappLink)}">Join WhatsApp group</a>`:""}</div>`;
+function renderSheet(editing){
+  const {club,role,isFounder:f}=current,col=colors[club.category]||colors.Other;
+  const tabs=[["space","Club space"]];
+  if(f)tabs.push(["requests","Join requests",current.applications.length]);
+  tabs.push(["members","Members",current.members.length]);
+  if(f)tabs.push(["settings","Settings"],["transfer","Transfer founder"]);
+  if(!tabs.some(t=>t[0]===current.tab))current.tab="space";
 
-  const view=`${waBlock}
-    <div class="block"><h3>Announcement</h3><div class="text ${space.announcement?"":"muted"}">${esc(space.announcement||"No announcement yet.")}</div></div>
-    <div class="block"><h3>About this space</h3><div class="text ${space.info?"":"muted"}">${esc(space.info||"Nothing here yet.")}</div></div>
-    ${isFounder?`<div><button class="btn solid" id="editBtn">Edit this page</button></div>`:""}`;
+  const head=`<div class="sheet-head" style="background:${col}"><button class="back" id="closeBtn">← My clubs</button>
+    <h2 id="sheetTitle">${esc(club.name)}</h2><span class="pill" style="margin:0 8px 0 0">${esc(role)}</span>
+    <span class="sub">${esc(club.category||"Other")}${club.meets?" · "+esc(club.meets):""}${club.room?" · "+esc(club.room):""} · ${club.filled||0}/${club.total||0} members</span></div>`;
+  const bar=`<div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab ${t[0]===current.tab?"active":""}" role="tab" data-tab="${t[0]}">${t[1]}${t[2]?`<span class="count">${t[2]}</span>`:""}</button>`).join("")}</div>`;
+  const body={space:()=>spaceTab(editing),requests:requestsTab,members:membersTab,settings:settingsTab,transfer:transferTab}[current.tab]();
 
-  const form=`<form id="spaceForm" class="block"><h3>Edit club space <span class="edit-tag">Founder</span></h3>
+  $("sheet").innerHTML=head+bar+`<div class="sheet-body">${current.err?`<div class="notice error">${esc(current.err)}</div>`:""}<div id="msg"></div>${body}</div>`;
+  $("closeBtn").onclick=closeSheet;
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{current.tab=b.dataset.tab;renderSheet(false);$("overlay").scrollTop=0});
+  wire();
+}
+
+/* ---- tab: club space (WhatsApp, announcement, info) ---- */
+function spaceTab(editing){
+  const {space,isFounder:f}=current,hasLink=WA.test(space.whatsappLink||"");
+  if(editing&&f)return`<form id="spaceForm" class="block"><h3>Edit club space <span class="edit-tag">Founder</span></h3>
     <div class="field"><label class="label" for="fWa">WhatsApp group link</label>
       <input id="fWa" type="url" maxlength="200" placeholder="https://chat.whatsapp.com/..." value="${esc(space.whatsappLink||"")}">
       <div class="hint">In WhatsApp: open your group → Group info → Invite via link → Copy link, then paste it here. Leave empty to remove it.</div></div>
     <div class="field"><label class="label" for="fAnn">Announcement (max 500)</label><textarea id="fAnn" maxlength="500">${esc(space.announcement||"")}</textarea></div>
     <div class="field"><label class="label" for="fInfo">About this space — schedule, rules, links (max 3000)</label><textarea id="fInfo" maxlength="3000" style="min-height:180px">${esc(space.info||"")}</textarea></div>
     <div class="row"><button class="btn solid" type="submit" id="saveBtn">Save</button><button class="btn" type="button" id="cancelBtn">Cancel</button></div></form>`;
+  return`<div class="block wa"><p><strong>WhatsApp group</strong><br><span class="muted">${hasLink?"Join the club's group chat to stay in the loop.":(f?"Add your group's invite link with “Edit club space” below.":"The founder hasn't added the WhatsApp link yet.")}</span></p>
+    ${hasLink?`<a class="btn btn-wa" target="_blank" rel="noopener noreferrer" href="${esc(space.whatsappLink)}">Join WhatsApp group</a>`:""}</div>
+    <div class="block"><h3>Announcement</h3><div class="text ${space.announcement?"":"muted"}">${esc(space.announcement||"No announcement yet.")}</div></div>
+    <div class="block"><h3>About this space</h3><div class="text ${space.info?"":"muted"}">${esc(space.info||"Nothing here yet.")}</div></div>
+    <div class="row"><a class="btn" href="./club.html?id=${encodeURIComponent(current.club.id)}">Open public club page</a>${f?`<button class="btn solid" id="editBtn">Edit club space</button>`:""}</div>`;
+}
 
-  $("sheet").innerHTML=head+`<div class="sheet-body">${err?`<div class="notice error">${esc(err)}</div>`:""}<div id="msg"></div>${editing&&isFounder?form:view}</div>`;
+/* ---- tab: join requests (founder) ---- */
+function requestsTab(){
+  const a=current.applications;
+  return`<div class="block"><h3>Join requests</h3><p class="small">Approve or reject students who applied to join your club.</p>`+
+  (a.length?a.map(x=>`<div class="person"><div><div class="name">${esc(x.name||"Student")}</div><span class="tag">Grade ${esc(x.grade||"—")}</span>
+    <div class="small" style="margin-top:6px">${esc(x.reason||"No reason provided")}</div><div class="small">${esc(x.email||"")}</div></div>
+    <div class="row"><button class="btn green" data-accept="${esc(x.id)}">Accept</button><button class="btn danger" data-reject="${esc(x.id)}">Reject</button></div></div>`).join(""):`<p class="muted">No pending join requests.</p>`)+`</div>`;
+}
 
-  $("closeBtn").onclick=closeSheet;
-  $("editBtn")?.addEventListener("click",()=>renderSheet(null,true));
-  $("cancelBtn")?.addEventListener("click",()=>renderSheet(null,false));
+/* ---- tab: members ---- */
+function membersTab(){
+  const f=current.isFounder,m=current.members;
+  return`<div class="block"><h3>Members</h3>${f?`<p class="small">Give members roles or remove them from your club.</p>`:""}`+
+  (m.length?m.map(x=>`<div class="person"><div><div class="name">${esc(x.name||"Student")}</div><span class="tag">${esc(x.userId===current.club.founderId?"Founder":(x.role||"Member"))}</span>${f?`<div class="small">${esc(x.email||"")}</div>`:""}</div>
+    ${f&&x.userId!==user.uid?`<div class="row"><select data-role="${esc(x.id)}">${ROLES.map(r=>`<option ${x.role===r?"selected":""}>${r}</option>`).join("")}</select>
+      <button class="btn solid" data-save-role="${esc(x.id)}">Save role</button><button class="btn danger" data-remove="${esc(x.id)}">Remove</button></div>`:""}</div>`).join(""):`<p class="muted">No members yet.</p>`)+`</div>`;
+}
+
+/* ---- tab: settings (founder) ---- */
+function settingsTab(){
+  const c=current.club;
+  return`<form id="clubForm" class="block"><h3>Club settings</h3>
+    <div class="field"><label class="label" for="sName">Name</label><input id="sName" required maxlength="100" value="${esc(c.name||"")}"></div>
+    <div class="field"><label class="label" for="sCat">Category</label><select id="sCat">${CATS.map(x=>`<option ${(c.category||"Other")===x?"selected":""}>${x}</option>`).join("")}</select></div>
+    <div class="field"><label class="label" for="sDesc">Short description</label><input id="sDesc" maxlength="180" value="${esc(c.desc||"")}"></div>
+    <div class="field"><label class="label" for="sFull">Full description</label><textarea id="sFull" maxlength="1500">${esc(c.full||c.desc||"")}</textarea></div>
+    <div class="field"><label class="label" for="sMeets">Meeting time</label><input id="sMeets" maxlength="100" value="${esc(c.meets||"")}"></div>
+    <div class="field"><label class="label" for="sRoom">Location</label><input id="sRoom" maxlength="150" value="${esc(c.room||"")}"></div>
+    <button class="btn solid" type="submit">Save club</button></form>`;
+}
+
+/* ---- tab: transfer founder ---- */
+function transferTab(){
+  const ch=current.members.filter(m=>m.userId!==user.uid);
+  return`<div class="block"><h3>Transfer founder role</h3><p class="small">Choose a current member. They become the new Founder and you become a normal member.</p>`+
+  (ch.length?`<div class="field"><select id="transferTo">${ch.map(m=>`<option value="${esc(m.userId)}">${esc(m.name||m.email||m.userId)} — ${esc(m.role||"Member")}</option>`).join("")}</select></div>
+    <div class="warn">This is permanent unless the new founder transfers it back: you will lose Founder permissions.</div><button class="btn danger" id="transferBtn">Transfer Founder role</button>`
+   :`<p class="muted">You need at least one other member before you can transfer the Founder role.</p>`)+`</div>`;
+}
+
+/* ================= actions ================= */
+function wire(){
+  $("editBtn")?.addEventListener("click",()=>renderSheet(true));
+  $("cancelBtn")?.addEventListener("click",()=>renderSheet(false));
   $("spaceForm")?.addEventListener("submit",saveSpace);
+  $("clubForm")?.addEventListener("submit",saveClub);
+  document.querySelectorAll("[data-accept]").forEach(b=>b.onclick=()=>acceptApp(b.dataset.accept));
+  document.querySelectorAll("[data-reject]").forEach(b=>b.onclick=()=>rejectApp(b.dataset.reject));
+  document.querySelectorAll("[data-save-role]").forEach(b=>b.onclick=()=>saveRole(b.dataset.saveRole));
+  document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>removeMember(b.dataset.remove));
+  $("transferBtn")?.addEventListener("click",transferFounder);
 }
 
 async function saveSpace(e){
   e.preventDefault();
   let link=$("fWa").value.trim();
   if(/^(chat\.whatsapp\.com|whatsapp\.com\/channel)\//i.test(link))link="https://"+link;
-  if(link&&!WA.test(link)){
-    $("msg").innerHTML=`<div class="notice error">That doesn't look like a WhatsApp invite link. It should start with https://chat.whatsapp.com/</div>`;
-    return;
-  }
+  if(link&&!WA.test(link)){showMsg("That doesn't look like a WhatsApp invite link. It should start with https://chat.whatsapp.com/",true);return}
   const data={whatsappLink:link,announcement:$("fAnn").value.trim(),info:$("fInfo").value.trim()};
   const btn=$("saveBtn");btn.disabled=true;btn.textContent="Saving...";
   try{
     await setDoc(doc(db,"clubs",current.club.id,"space","main"),{...data,updatedAt:serverTimestamp(),updatedBy:user.uid});
-    current.space=data;
-    renderSheet(null,false);
-    $("msg").innerHTML=`<div class="notice">Saved. Members can see the changes now.</div>`;
+    current.space=data;renderSheet(false);showMsg("Saved. Members can see the changes now.");
   }catch(err){
     console.error(err);
-    const why=err&&err.code==="permission-denied"
-      ?"Permission denied. Publish the latest firestore.rules in Firebase (Firestore → Rules → Publish), then try again."
-      :"Could not save ("+esc(err&&(err.code||err.message)||"unknown error")+").";
-    $("msg").innerHTML=`<div class="notice error">${why}</div>`;
+    showMsg(err&&err.code==="permission-denied"?"Permission denied. Publish the latest firestore.rules in Firebase (Firestore → Rules → Publish), then try again.":"Could not save ("+(err&&(err.code||err.message)||"unknown error")+").",true);
     btn.disabled=false;btn.textContent="Save";
   }
 }
 
-function closeSheet(){$("overlay").classList.remove("open");document.body.style.overflow="";current=null}
-$("overlay").addEventListener("click",e=>{if(e.target===$("overlay"))closeSheet()});
+async function saveClub(e){
+  e.preventDefault();
+  try{
+    await updateDoc(doc(db,"clubs",current.club.id),{
+      name:$("sName").value.trim(),category:$("sCat").value,desc:$("sDesc").value.trim(),
+      full:$("sFull").value.trim(),meets:$("sMeets").value.trim(),room:$("sRoom").value.trim(),updatedAt:serverTimestamp()});
+    await reload("Club updated successfully.");
+  }catch(err){console.error(err);showMsg("Could not update the club.",true)}
+}
+
+async function acceptApp(id){
+  const a=current.applications.find(x=>x.id===id);if(!a)return;
+  const clubId=current.club.id;
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,"clubs",clubId),appRef=doc(db,"applications",id),memberRef=doc(db,"clubs",clubId,"members",a.userId);
+      const [cSnap,mSnap]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
+      if(!cSnap.exists())throw new Error("Club no longer exists.");
+      if(mSnap.exists())throw new Error("This student is already a member.");
+      const c=cSnap.data();
+      if((c.filled||0)>=(c.total||0))throw new Error("The club is full.");
+      tx.set(memberRef,{userId:a.userId,name:a.name||"Student",email:a.email||"",role:"Member",joinedAt:serverTimestamp()});
+      tx.update(clubRef,{filled:(c.filled||0)+1});
+      tx.update(appRef,{status:"accepted",reviewedAt:serverTimestamp(),reviewedBy:user.uid});
+    });
+    await reload("Student accepted into the club.");
+  }catch(err){console.error(err);showMsg(err.message||"Could not accept the application.",true)}
+}
+
+async function rejectApp(id){
+  try{
+    await updateDoc(doc(db,"applications",id),{status:"rejected",reviewedAt:serverTimestamp(),reviewedBy:user.uid});
+    await reload("Application rejected.");
+  }catch(err){console.error(err);showMsg("Could not reject the application.",true)}
+}
+
+async function saveRole(id){
+  const role=document.querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+  try{await updateDoc(doc(db,"clubs",current.club.id,"members",id),{role});await reload("Member role updated.")}
+  catch(err){console.error(err);showMsg("Could not update role.",true)}
+}
+
+async function removeMember(id){
+  if(!confirm("Remove this member from the club?"))return;
+  const clubId=current.club.id;
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,"clubs",clubId),memberRef=doc(db,"clubs",clubId,"members",id);
+      const c=(await tx.get(clubRef)).data()||{};
+      tx.delete(memberRef);
+      tx.update(clubRef,{filled:Math.max(0,(c.filled||0)-1)});
+    });
+    await reload("Member removed.");
+  }catch(err){console.error(err);showMsg("Could not remove member.",true)}
+}
+
+async function transferFounder(){
+  const newFounder=$("transferTo").value,clubId=current.club.id;
+  if(!confirm("Transfer Founder role to this member? You will no longer be Founder."))return;
+  try{
+    await runTransaction(db,async tx=>{
+      const clubRef=doc(db,"clubs",clubId),oldRef=doc(db,"clubs",clubId,"members",user.uid),newRef=doc(db,"clubs",clubId,"members",newFounder);
+      const [cSnap,nSnap]=await Promise.all([tx.get(clubRef),tx.get(newRef)]);
+      if(!cSnap.exists()||!nSnap.exists())throw new Error("Member not found.");
+      tx.update(clubRef,{founderId:newFounder,updatedAt:serverTimestamp()});
+      tx.update(newRef,{role:"Founder"});
+      tx.update(oldRef,{role:"Member"});
+    });
+    closeSheet();await loadClubs();
+  }catch(err){console.error(err);showMsg(err.message||"Could not transfer Founder role.",true)}
+}
+
+function closeSheet(){$("overlay").classList.remove("open");document.body.style.overflow="";current=null;if(location.search)history.replaceState(null,"","./my-clubs.html")}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&current)closeSheet()});
-</script></body></html>
+</script>
+<link rel="stylesheet" href="./mobile.css">
+</body></html>
