@@ -41,7 +41,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 @media(max-width:850px){.links{display:none}.grid{grid-template-columns:1fr}.wrap{padding:0 18px}.sheet-head,.sheet-body{padding-left:18px;padding-right:18px}.tabs{padding:0 8px}.person{grid-template-columns:1fr}}
 </style></head><body>
 <header><nav class="wrap"><a class="logo" href="./index.html"><span class="dot"></span>Selfstarters</a>
-<ul class="links"><li><a href="./index.html">Home</a></li><li><a href="./clubs.html">Clubs</a></li><li><a href="./my-clubs.html" class="on">My clubs</a></li><li><a href="./profile.html">Profile</a></li></ul>
+<ul class="links"><li><a href="./index.html">Home</a></li><li><a href="./index.html#clubs">Clubs</a></li><li><a href="./my-clubs.html" class="on">My clubs</a></li><li><a href="./profile.html">Profile</a></li></ul>
 <div class="auth" id="auth"></div></nav></header>
 
 <section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its page, members and WhatsApp group. Founders can manage everything from here.</p></div></section>
@@ -101,7 +101,7 @@ async function loadClubs(){
 
 function renderGrid(){
   if(!rows.length){
-    $("grid").innerHTML=`<div class="state"><h3>No clubs yet</h3><p>You are not a member of any club yet. Apply to one and it will show up here once accepted.</p><a class="btn solid" href="./clubs.html">Browse clubs</a></div>`;
+    $("grid").innerHTML=`<div class="state"><h3>No clubs yet</h3><p>You are not a member of any club yet. Apply to one and it will show up here once accepted.</p><a class="btn solid" href="./index.html#clubs">Browse clubs</a></div>`;
     return;
   }
   $("grid").innerHTML=rows.map((r,i)=>{
