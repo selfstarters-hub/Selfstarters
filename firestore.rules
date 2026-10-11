@@ -65,7 +65,7 @@ service cloud.firestore {
           )
         );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() || isFounder(clubId);
 
       // CLUB SPACE (My Clubs page) - private: members, founder and admin can read,
       // only the founder (or admin) can write. Holds the WhatsApp link.
@@ -76,35 +76,27 @@ service cloud.firestore {
       }
 
       // CLUB MEMBERS
+      // The roster (and therefore the member count) is PRIVATE:
+      // only the club founder and the site admin can list it.
+      // A signed-in student can read just their own membership record.
       match /members/{memberId} {
-        // Members are visible on the club page.
-        allow read: if true;
+        allow read: if signedIn()
+          && (memberId == request.auth.uid || isFounder(clubId) || isAdmin());
 
-        // A student can join only as themselves.
-        // The club filled count must increase by exactly one.
-        allow create: if (
-          isAdmin()
-          || (
-            signedIn()
-            && memberId == request.auth.uid
-            && !exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(memberId))
-          )
+        // No member limit. A student can join only as themselves;
+        // the founder/admin can add someone else.
+        allow create: if isAdmin()
           || (
             isFounder(clubId)
             && memberId != get(/databases/$(database)/documents/clubs/$(clubId)).data.founderId
             && !exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(memberId))
           )
-        )
-          && (
-            isAdmin()
-            || isFounder(clubId)
-            || (
-              request.resource.data.userId == request.auth.uid
-              && request.resource.data.role == 'Member'
-              && get(/databases/$(database)/documents/clubs/$(clubId)).data.filled < get(/databases/$(database)/documents/clubs/$(clubId)).data.total
-              && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.filled
-                   == get(/databases/$(database)/documents/clubs/$(clubId)).data.filled + 1
-            )
+          || (
+            signedIn()
+            && memberId == request.auth.uid
+            && !exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(memberId))
+            && request.resource.data.userId == request.auth.uid
+            && request.resource.data.role == 'Member'
           );
 
         // Founder can change roles. A normal member cannot edit their own role.

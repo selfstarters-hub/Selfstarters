@@ -2,7 +2,7 @@ import { db, SITE } from './firebase-init.js';
 import { onReady, isAdmin, getProfile, doSignOut } from './auth.js';
 import {
   collection, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, doc,
-  query, orderBy, serverTimestamp, runTransaction, getDoc
+  query, orderBy, serverTimestamp, runTransaction, getDoc, deleteField, getCountFromServer
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const state = { clubs: [], events: [], applications: [], pitches: [], eventPitches: [], messages: [], reviews: [], users: [] };
@@ -68,6 +68,7 @@ function installEventPitchPanel(){
 
 document.querySelectorAll('.admin-nav-btn[data-panel]').forEach(btn => btn.addEventListener('click', () => switchPanel(btn.dataset.panel)));
 function switchPanel(name){
+  if(name === 'clubs') loadRosterCounts();
   document.querySelectorAll('.admin-nav-btn[data-panel]').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
   $('panelTitle').textContent = ({
@@ -87,6 +88,7 @@ function startListeners(){
       state[key] = snap.docs.map(d => ({id:d.id,...d.data()}));
       renderAll();
       if(key === 'pitches') await migrateOldApprovedClubPitches();
+      if(key === 'clubs'){ removeLegacyCapacityFields(); loadRosterCounts(); }
     }, err => console.error(coll, err));
   }
 }
@@ -103,23 +105,52 @@ $('newClubBtn').addEventListener('click', () => openClubEditor());
 $('newEventBtn').addEventListener('click', () => openEventEditor());
 
 function openClubEditor(club=null){
-  const c = club || {name:'',category:'Tech',desc:'',full:'',meets:'',room:'',filled:0,total:20,number:'',ratingSum:0,ratingCount:0};
+  const c = club || {name:'',category:'Tech',desc:'',full:'',meets:'',room:'',number:'',ratingSum:0,ratingCount:0};
   const box = $('clubEditor'); box.style.display='block';
   box.innerHTML = `<h3>${club ? 'Edit club' : 'Add club'}</h3><form class="stack-form" id="clubEditForm"><div class="grid-2"><label>Name<input id="ceName" value="${esc(c.name)}" required></label><label>Category<select id="ceCategory"><option>Tech</option><option>Academic</option><option>Sports</option><option>Games</option><option>Arts</option>
 <option>Social</option><option>Community</option><option>Culture</option><option>Volunteering</option>
-<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option></select></label><label>Short description<input id="ceDesc" value="${esc(c.desc)}" required></label><label>Meeting time<input id="ceMeets" value="${esc(c.meets)}" required></label><label>Location<input id="ceRoom" value="${esc(c.room)}"></label><label>Roster capacity<input id="ceTotal" type="number" min="1" value="${Number(c.total)||20}" required></label><label>Filled<input id="ceFilled" type="number" min="0" value="${Number(c.filled)||0}" required></label><label>Display number<input id="ceNumber" value="${esc(c.number || '')}"></label></div><label>Full description<textarea id="ceFull" required>${esc(c.full)}</textarea></label><div class="admin-form-actions"><button class="btn btn-solid" type="submit">${club?'Save changes':'Create club'}</button><button class="btn" type="button" id="cancelClub">Cancel</button></div></form>`;
+<option>Leadership</option><option>Entrepreneurship</option><option>Science</option><option>Other</option></select></label><label>Short description<input id="ceDesc" value="${esc(c.desc)}" required></label><label>Meeting time<input id="ceMeets" value="${esc(c.meets)}" required></label><label>Location<input id="ceRoom" value="${esc(c.room)}"></label><label>Display number<input id="ceNumber" value="${esc(c.number || '')}"></label></div><label>Full description<textarea id="ceFull" required>${esc(c.full)}</textarea></label><div class="admin-form-actions"><button class="btn btn-solid" type="submit">${club?'Save changes':'Create club'}</button><button class="btn" type="button" id="cancelClub">Cancel</button></div></form>`;
   $('ceCategory').value = c.category || 'Tech';
   $('cancelClub').onclick=()=>box.style.display='none';
-  $('clubEditForm').onsubmit=async e=>{e.preventDefault(); const data={name:$('ceName').value.trim(),category:$('ceCategory').value,desc:$('ceDesc').value.trim(),full:$('ceFull').value.trim(),meets:$('ceMeets').value.trim(),room:$('ceRoom').value.trim(),total:Math.max(1,Number($('ceTotal').value)),filled:Math.max(0,Number($('ceFilled').value)),number:$('ceNumber').value.trim()}; if(data.filled>data.total)data.filled=data.total;
+  $('clubEditForm').onsubmit=async e=>{e.preventDefault(); const data={name:$('ceName').value.trim(),category:$('ceCategory').value,desc:$('ceDesc').value.trim(),full:$('ceFull').value.trim(),meets:$('ceMeets').value.trim(),room:$('ceRoom').value.trim(),number:$('ceNumber').value.trim()};
     if(club) {
-      await updateDoc(doc(db,'clubs',club.id),data);
+      await updateDoc(doc(db,'clubs',club.id),{...data,total:deleteField(),filled:deleteField()});
     } else {
       const ref = await addDoc(collection(db,'clubs'),{...data,ratingSum:0,ratingCount:0,createdAt:serverTimestamp()});
     }
     box.style.display='none';};
 }
+/* Member counts are private. They are counted straight from each club's members
+   collection, which only admins (and that club's founder) are allowed to read. */
+const rosterCounts = {};
+async function loadRosterCounts(){
+  await Promise.all(state.clubs.map(async c => {
+    try{
+      const snap = await getCountFromServer(collection(db,'clubs',c.id,'members'));
+      rosterCounts[c.id] = snap.data().count;
+    }catch(e){ console.error('Roster count failed for', c.id, e); }
+  }));
+  document.querySelectorAll('[data-roster]').forEach(td => {
+    const n = rosterCounts[td.dataset.roster];
+    td.textContent = n ?? '—';
+  });
+}
+
+/* One-time cleanup: clubs no longer have a capacity, and the old public
+   "filled"/"total" numbers are removed from the club documents. */
+const cleanedClubs = new Set();
+async function removeLegacyCapacityFields(){
+  for(const c of state.clubs){
+    if(cleanedClubs.has(c.id)) continue;
+    if(!('filled' in c) && !('total' in c)) continue;
+    cleanedClubs.add(c.id);
+    try{ await updateDoc(doc(db,'clubs',c.id),{filled:deleteField(),total:deleteField()}); }
+    catch(e){ cleanedClubs.delete(c.id); console.error('Capacity cleanup failed for', c.id, e); }
+  }
+}
+
 function renderClubs(){
-  $('clubsTable').innerHTML = state.clubs.length ? state.clubs.map(c=>`<tr><td><strong>${esc(c.name)}</strong><br><span class="small-muted">${esc(c.desc)}</span></td><td>${esc(c.category)}</td><td>${esc(c.meets)}<br><span class="small-muted">${esc(c.room)}</span></td><td>${Number(c.filled)||0}/${Number(c.total)||0}</td><td class="actions"><button class="btn btn-sm" data-edit-club="${c.id}">Edit</button><button class="btn btn-danger btn-sm" data-delete-club="${c.id}">Delete</button></td></tr>`).join('') : emptyRow(5);
+  $('clubsTable').innerHTML = state.clubs.length ? state.clubs.map(c=>`<tr><td><strong>${esc(c.name)}</strong><br><span class="small-muted">${esc(c.desc)}</span></td><td>${esc(c.category)}</td><td>${esc(c.meets)}<br><span class="small-muted">${esc(c.room)}</span></td><td data-roster="${c.id}">${rosterCounts[c.id] ?? '…'}</td><td class="actions"><button class="btn btn-sm" data-edit-club="${c.id}">Edit</button><button class="btn btn-danger btn-sm" data-delete-club="${c.id}">Delete</button></td></tr>`).join('') : emptyRow(5);
   document.querySelectorAll('[data-edit-club]').forEach(b=>b.onclick=()=>openClubEditor(state.clubs.find(x=>x.id===b.dataset.editClub)));
   document.querySelectorAll('[data-delete-club]').forEach(b=>b.onclick=async()=>{if(confirm('Delete this club? Existing applications and reviews will remain, but the club disappears from the public site.')) await deleteDoc(doc(db,'clubs',b.dataset.deleteClub));});
 }
@@ -156,7 +187,7 @@ async function approvePitch(id){
   if(exists){alert('A club with this name already exists.');return;}
   const clubRef = await addDoc(collection(db,'clubs'),{
     name:p.clubName, category:p.category, desc:p.description, full:p.description,
-    meets:'TBD', room:'TBD', filled:1, total:20, number:'',
+    meets:'TBD', room:'TBD', number:'',
     ratingSum:0, ratingCount:0, founderId:p.userId, createdAt:serverTimestamp()
   });
 
@@ -198,7 +229,6 @@ async function migrateOldApprovedClubPitches(){
       if(!club.founderId){
         await updateDoc(doc(db,'clubs',club.id),{
           founderId:p.userId,
-          filled:Math.max(1,Number(club.filled)||0),
           updatedAt:serverTimestamp()
         });
 

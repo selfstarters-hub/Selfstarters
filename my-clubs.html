@@ -44,7 +44,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 <ul class="links"><li><a href="./index.html">Home</a></li><li><a href="./index.html#clubs">Clubs</a></li><li><a href="./my-clubs.html" class="on">My clubs</a></li><li><a href="./profile.html">Profile</a></li></ul>
 <div class="auth" id="auth"></div></nav></header>
 
-<section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its page, members and WhatsApp group. Founders can manage everything from here.</p></div></section>
+<section class="hero"><div class="wrap"><div class="eyebrow">Members only</div><h1>My clubs</h1><p>Every club you belong to, in one place. Open a club to see its page and WhatsApp group. Founders can manage everything from here.</p></div></section>
 
 <main class="wrap"><div id="grid" class="grid"><div class="state">Loading your clubs...</div></div></main>
 <div class="wrap mono" style="padding-bottom:30px;font-size:.65rem;color:#6B6456">my-clubs v5</div>
@@ -127,8 +127,9 @@ async function fetchAll(){
   try{const c=await getDoc(doc(db,"clubs",id));if(c.exists())current.club={id,...c.data()}}catch(e){console.warn(e)}
   try{const s=await getDoc(doc(db,"clubs",id,"space","main"));if(s.exists())current.space={announcement:"",info:"",whatsappLink:"",...s.data()}}
   catch(e){console.error(e);current.err="Could not load the club space ("+(e.code||e.message)+"). "+(e.code==="permission-denied"?"Publish the latest firestore.rules to project selfstarters-6cf59.":"")}
-  try{const m=await getDocs(collection(db,"clubs",id,"members"));current.members=m.docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.error(e)}
+  current.members=[];
   if(current.isFounder){
+    try{const m=await getDocs(collection(db,"clubs",id,"members"));current.members=m.docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.error(e)}
     try{const a=await getDocs(query(collection(db,"applications"),where("clubId","==",id)));current.applications=a.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.status==="pending")}
     catch(e){console.error(e)}
   }
@@ -146,14 +147,12 @@ function showMsg(text,error=false){
 function renderSheet(editing){
   const {club,role,isFounder:f}=current,col=colors[club.category]||colors.Other;
   const tabs=[["space","Club space"]];
-  if(f)tabs.push(["requests","Join requests",current.applications.length]);
-  tabs.push(["members","Members",current.members.length]);
-  if(f)tabs.push(["settings","Settings"],["transfer","Transfer founder"]);
+  if(f)tabs.push(["requests","Join requests",current.applications.length],["members","Members",current.members.length],["settings","Settings"],["transfer","Transfer founder"]);
   if(!tabs.some(t=>t[0]===current.tab))current.tab="space";
 
   const head=`<div class="sheet-head" style="background:${col}"><button class="back" id="closeBtn">← My clubs</button>
     <h2 id="sheetTitle">${esc(club.name)}</h2><span class="pill" style="margin:0 8px 0 0">${esc(role)}</span>
-    <span class="sub">${esc(club.category||"Other")}${club.meets?" · "+esc(club.meets):""}${club.room?" · "+esc(club.room):""} · ${club.filled||0}/${club.total||0} members</span></div>`;
+    <span class="sub">${esc(club.category||"Other")}${club.meets?" · "+esc(club.meets):""}${club.room?" · "+esc(club.room):""}${f?" · "+current.members.length+" members":""}</span></div>`;
   const bar=`<div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab ${t[0]===current.tab?"active":""}" role="tab" data-tab="${t[0]}">${t[1]}${t[2]?`<span class="count">${t[2]}</span>`:""}</button>`).join("")}</div>`;
   const body={space:()=>spaceTab(editing),requests:requestsTab,members:membersTab,settings:settingsTab,transfer:transferTab}[current.tab]();
 
@@ -273,10 +272,7 @@ async function acceptApp(id){
       const [cSnap,mSnap]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
       if(!cSnap.exists())throw new Error("Club no longer exists.");
       if(mSnap.exists())throw new Error("This student is already a member.");
-      const c=cSnap.data();
-      if((c.filled||0)>=(c.total||0))throw new Error("The club is full.");
       tx.set(memberRef,{userId:a.userId,name:a.name||"Student",email:a.email||"",role:"Member",joinedAt:serverTimestamp()});
-      tx.update(clubRef,{filled:(c.filled||0)+1});
       tx.update(appRef,{status:"accepted",reviewedAt:serverTimestamp(),reviewedBy:user.uid});
     });
     await reload("Student accepted into the club.");
@@ -300,12 +296,7 @@ async function removeMember(id){
   if(!confirm("Remove this member from the club?"))return;
   const clubId=current.club.id;
   try{
-    await runTransaction(db,async tx=>{
-      const clubRef=doc(db,"clubs",clubId),memberRef=doc(db,"clubs",clubId,"members",id);
-      const c=(await tx.get(clubRef)).data()||{};
-      tx.delete(memberRef);
-      tx.update(clubRef,{filled:Math.max(0,(c.filled||0)-1)});
-    });
+    await deleteDoc(doc(db,"clubs",clubId,"members",id));
     await reload("Member removed.");
   }catch(err){console.error(err);showMsg("Could not remove member.",true)}
 }

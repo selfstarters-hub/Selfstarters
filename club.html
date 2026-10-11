@@ -25,7 +25,7 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.content{padding:50px 0 90px}
 .layout{display:grid;grid-template-columns:1.6fr .8fr;gap:22px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
 .panel h2{font-size:2rem;margin-bottom:15px}.panel p{color:var(--muted);line-height:1.65}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{border:1px solid var(--line);padding:16px;border-radius:10px}.stat b{font:700 1.5rem "JetBrains Mono"}.stat span{display:block;color:var(--muted);font-size:.75rem;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,220px));gap:10px}.stat{border:1px solid var(--line);padding:16px;border-radius:10px}.stat b{font:700 1.5rem "JetBrains Mono"}.stat span{display:block;color:var(--muted);font-size:.75rem;margin-top:4px}
 .member{display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid var(--line);padding:14px 0}.member:first-child{border-top:0}.memberInfo{min-width:0}.memberName{font-weight:800}.memberEmail{font-size:.78rem;color:var(--muted);margin-top:3px}.role{font:600 .63rem "JetBrains Mono";text-transform:uppercase;background:#eef2f7;color:var(--navy);padding:6px 8px;border-radius:999px;white-space:nowrap}
 .memberTools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.roleSelect{padding:8px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:.8rem}
 .form{display:grid;gap:10px}.field{display:grid;gap:6px}.field label{font:600 .68rem "JetBrains Mono";text-transform:uppercase}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:110px;resize:vertical}
@@ -62,7 +62,6 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 </div>
 </div>
 <div>
-<span id="status" class="badge">OPEN</span>
 <p class="mono" id="meeting"></p>
 <p class="mono" id="location"></p>
 </div>
@@ -77,17 +76,17 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 <p id="full"></p>
 </section>
 
-<section class="panel">
+<section class="panel hidden" id="statsPanel">
 <h2>Club stats</h2>
 <div class="stats">
 <div class="stat"><b id="memberCount">0</b><span>Members</span></div>
-<div class="stat"><b id="capacity">0</b><span>Capacity</span></div>
-<div class="stat"><b id="spots">0</b><span>Open spots</span></div>
 </div>
+<p class="small" style="margin:12px 0 0">Only the club founder and the site admin can see this.</p>
 </section>
 
-<section class="panel">
+<section class="panel hidden" id="membersPanel">
 <h2>Members</h2>
+<p class="small" style="margin:0 0 6px">Only the club founder and the site admin can see this list.</p>
 <div id="membersList"><p class="small">Loading members...</p></div>
 </section>
 </div>
@@ -128,14 +127,17 @@ nav{height:76px;display:flex;align-items:center;justify-content:space-between}.l
 
 <script type="module">
 import { db } from './firebase-init.js';
-import { onReady, doSignOut } from './auth.js';
+import { onReady, doSignOut, isAdmin } from './auth.js';
 import {
   doc, getDoc, collection, onSnapshot, query, orderBy,
-  runTransaction, updateDoc, serverTimestamp
+  runTransaction, updateDoc, deleteDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const clubId = new URLSearchParams(location.search).get('id');
-let club = null, user = null, profile = null, members = [];
+let club = null, user = null, profile = null;
+let members = [];          // full roster: loaded ONLY for the founder / site admin
+let myMember = null;       // the signed-in student's own membership record
+let membersUnsub = null, myUnsub = null, myUid = null;
 
 const $ = id => document.getElementById(id);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({
@@ -152,6 +154,41 @@ function setMessage(text, type=''){
 function isFounder(){
   return !!(user && club && club.founderId === user.uid);
 }
+// Member counts and the roster are private: founder + site admin only.
+function canSeeRoster(){
+  return isFounder() || isAdmin();
+}
+
+/** Starts/stops the Firestore listeners that depend on who is signed in. */
+function syncListeners(){
+  if(!club) return;
+
+  // 1) The student's own membership (allowed for everyone signed in).
+  const uid = user ? user.uid : null;
+  if(uid !== myUid){
+    if(myUnsub){ myUnsub(); myUnsub = null; }
+    myMember = null; myUid = uid;
+    if(uid){
+      myUnsub = onSnapshot(doc(db,'clubs',clubId,'members',uid), snap => {
+        myMember = snap.exists() ? { id: snap.id, ...snap.data() } : null;
+        renderClub();
+      }, e => console.error(e));
+    }
+  }
+
+  // 2) The whole roster (founder / site admin only).
+  if(canSeeRoster()){
+    if(!membersUnsub){
+      const q = query(collection(db,'clubs',clubId,'members'), orderBy('joinedAt','asc'));
+      membersUnsub = onSnapshot(q, snap => {
+        members = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderClub();
+      }, e => { console.error(e); $('membersList').innerHTML = '<p class="small">Could not load members.</p>'; });
+    }
+  } else if(membersUnsub){
+    membersUnsub(); membersUnsub = null; members = [];
+  }
+}
 
 function renderAuth(){
   if(!user){
@@ -163,11 +200,6 @@ function renderAuth(){
 }
 
 function renderClub(){
-  const total = Number(club.total) || 0;
-  const count = members.length;
-  const spots = total ? Math.max(0,total-count) : 999999;
-  const full = total > 0 && count >= total;
-
   $('category').textContent = (club.category || 'Other') + ' club';
   $('name').textContent = club.name || 'Club';
   $('desc').textContent = club.desc || '';
@@ -179,13 +211,13 @@ function renderClub(){
   $('sideLoc').textContent = club.room || 'TBD';
   $('sideNum').textContent = club.number || '00';
 
-  $('memberCount').textContent = count;
-  $('capacity').textContent = total || '—';
-  $('spots').textContent = total ? spots : '∞';
-  $('status').textContent = full ? 'FULL' : 'OPEN';
+  const showRoster = canSeeRoster();
+  $('statsPanel').classList.toggle('hidden', !showRoster);
+  $('membersPanel').classList.toggle('hidden', !showRoster);
+  if(showRoster) $('memberCount').textContent = members.length;
 
   if(user){
-    const me = members.find(m => m.id === user.uid);
+    const me = myMember;
     if(me){
       $('joinBtn').classList.add('hidden');
       $('leaveBtn').classList.remove('hidden');
@@ -196,7 +228,7 @@ function renderClub(){
       $('leaveBtn').classList.add('hidden');
       $('membership').innerHTML='<p>You are not a member of this club.</p>';
     }
-    $('joinBtn').disabled = full && !me;
+    $('joinBtn').disabled = false;
   }else{
     $('joinBtn').classList.remove('hidden');
     $('leaveBtn').classList.add('hidden');
@@ -204,7 +236,7 @@ function renderClub(){
     $('membership').innerHTML='<p>Log in to join this club.</p>';
   }
 
-  renderMembers();
+  if(showRoster) renderMembers();
   renderOwner();
 }
 
@@ -255,15 +287,7 @@ function renderMembers(){
       if(!confirm('Remove this member from the club?')) return;
       const uid=btn.dataset.removeMember;
       try{
-        await runTransaction(db,async tx=>{
-          const clubRef=doc(db,'clubs',clubId);
-          const memberRef=doc(db,'clubs',clubId,'members',uid);
-          const c=await tx.get(clubRef);
-          if(!c.exists()) throw new Error('Club not found');
-          const oldFilled=Number(c.data().filled)||0;
-          tx.delete(memberRef);
-          tx.update(clubRef,{filled:Math.max(0,oldFilled-1)});
-        });
+        await deleteDoc(doc(db,'clubs',clubId,'members',uid));
         setMessage('Member removed.','success');
       }catch(e){console.error(e);setMessage('Could not remove the member.','error');}
     };
@@ -290,17 +314,9 @@ async function joinClub(){
 
   try{
     await runTransaction(db,async tx=>{
-      const clubRef=doc(db,'clubs',clubId);
       const memberRef=doc(db,'clubs',clubId,'members',user.uid);
-      const [c,m]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
-      if(!c.exists()) throw new Error('Club not found');
+      const m=await tx.get(memberRef);
       if(m.exists()) return;
-
-      const data=c.data();
-      const total=Number(data.total)||0;
-      const filled=Number(data.filled)||0;
-      if(total>0 && filled>=total) throw new Error('FULL');
-
       tx.set(memberRef,{
         userId:user.uid,
         name:profile?.name || user.displayName || 'Student',
@@ -308,12 +324,10 @@ async function joinClub(){
         role:'Member',
         joinedAt:serverTimestamp()
       });
-      tx.update(clubRef,{filled:filled+1});
     });
   }catch(e){
     console.error(e);
-    if(e.message==='FULL') alert('This club is full.');
-    else alert('Could not join the club. Please try again.');
+    alert('Could not join the club. Please try again.');
   }
 }
 
@@ -326,15 +340,7 @@ async function leaveClub(){
   if(!confirm('Leave this club?')) return;
 
   try{
-    await runTransaction(db,async tx=>{
-      const clubRef=doc(db,'clubs',clubId);
-      const memberRef=doc(db,'clubs',clubId,'members',user.uid);
-      const [c,m]=await Promise.all([tx.get(clubRef),tx.get(memberRef)]);
-      if(!m.exists()) return;
-      const filled=Number(c.data().filled)||0;
-      tx.delete(memberRef);
-      tx.update(clubRef,{filled:Math.max(0,filled-1)});
-    });
+    await deleteDoc(doc(db,'clubs',clubId,'members',user.uid));
   }catch(e){console.error(e);alert('Could not leave the club.');}
 }
 
@@ -373,12 +379,13 @@ $('transferBtn').onclick=async()=>{
       tx.update(oldMemberRef,{role:'Founder',updatedAt:serverTimestamp()});
     });
     alert('Founder role transferred.');
+    location.reload();
   }catch(e){console.error(e);alert('Could not transfer the founder role.');}
 };
 
 onReady(async(u,p)=>{
   user=u; profile=p; renderAuth();
-  if(club) renderClub();
+  if(club){ syncListeners(); renderClub(); }
 });
 
 async function loadClub(){
@@ -388,11 +395,7 @@ async function loadClub(){
     if(!snap.exists()){$('loading').textContent='Club not found.';return;}
     club={id:snap.id,...snap.data()};
 
-    const membersQuery=query(collection(db,'clubs',clubId,'members'),orderBy('joinedAt','asc'));
-    onSnapshot(membersQuery,s=>{
-      members=s.docs.map(d=>({id:d.id,...d.data()}));
-      renderClub();
-    },e=>{console.error(e);$('membersList').innerHTML='<p class="small">Could not load members.</p>';});
+    syncListeners();
 
     $('loading').classList.add('hidden');
     $('page').classList.remove('hidden');

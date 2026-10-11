@@ -67,21 +67,21 @@ function animateCount(el, target){
   const t = setInterval(() => { cur += step; if(cur >= target){ cur = target; clearInterval(t); } el.textContent = cur; }, 20);
 }
 function renderStats(){
-  const totalOpen = CLUBS.reduce((s, c) => s + Math.max(0, (c.total || 0) - (c.filled || 0)), 0);
   animateCount(document.getElementById('statClubs'), CLUBS.length);
-  animateCount(document.getElementById('statSpots'), totalOpen);
 }
 
-/* ============ HERO CLUB CARDS (real clubs, most-filled first) ============ */
+/* ============ HERO CLUB CARDS (real clubs, by club number) ============ */
 function renderHeroCards(){
   const el = document.getElementById('heroCards');
   if(!el) return;
-  const top = [...CLUBS].sort((a, b) => (b.filled || 0) - (a.filled || 0)).slice(0, 3);
+  const top = [...CLUBS]
+    .sort((a, b) => (parseInt(a.number, 10) || 9999) - (parseInt(b.number, 10) || 9999) || String(a.name || '').localeCompare(String(b.name || '')))
+    .slice(0, 3);
   el.innerHTML = top.map((c, i) => `
     <div class="float-card fc${i + 1}" data-hero-club="${c.id}" role="button" tabindex="0">
       <div class="patch" style="background:${colorFor(c.category)}">${iconFor(c.category)}</div>
       <h4>${escapeHtml(c.name)}</h4>
-      <p>${t('hero.cardMeta', { filled: c.filled || 0, total: c.total || 0 })}${c.meets ? ' · ' + escapeHtml(c.meets) : ''}</p>
+      <p>${escapeHtml(c.meets || t('card.tbd'))}</p>
     </div>`).join('');
   el.querySelectorAll('[data-hero-club]').forEach(card => {
     const open = () => openClubModal(card.dataset.heroClub);
@@ -110,9 +110,6 @@ function renderClubs(){
   }
   grid.innerHTML = list.map(c => {
     const color = colorFor(c.category);
-    const total = c.total || 0, filled = c.filled || 0;
-    const pct = total ? Math.round((filled / total) * 100) : 0;
-    const full = filled >= total && total > 0;
     const avg = c.ratingCount ? (c.ratingSum / c.ratingCount) : 0;
     return `
     <div class="club-card" style="--accent:${color}">
@@ -128,8 +125,6 @@ function renderClubs(){
       ${c.ratingCount ? `<div class="rating-line"><span class="stars">${starString(avg)}</span> ${avg.toFixed(1)} (${c.ratingCount})</div>` : ''}
       <div class="meta-row">
         <span>${t('card.meets')} · ${escapeHtml(c.meets || t('card.tbd'))}</span>
-        <span>${full ? t('card.full') : t('card.spots', { n: total - filled })}</span>
-        <div class="spots-bar ${full ? 'full' : ''}"><i style="width:${pct}%"></i></div>
       </div>
       <div class="card-actions">
         <button class="btn btn-solid btn-sm" style="flex:1; background:${color}; border-color:${color};" data-view="${c.id}">${t('card.view')}</button>
@@ -153,7 +148,6 @@ async function openClubModal(id){
   const color = colorFor(c.category);
   const overlay = document.getElementById('clubOverlay');
   const modal = document.getElementById('clubModalContent');
-  const total = c.total || 0, filled = c.filled || 0;
 
   modal.innerHTML = `
     <button class="modal-close" id="clubModalClose">✕</button>
@@ -164,8 +158,6 @@ async function openClubModal(id){
     <div class="meta-grid">
       <div><div class="k">${t('m.meets')}</div><div class="v">${escapeHtml(c.meets || t('card.tbd'))}</div></div>
       <div><div class="k">${t('m.location')}</div><div class="v">${escapeHtml(c.room || t('card.tbd'))}</div></div>
-      <div><div class="k">${t('m.roster')}</div><div class="v">${t('m.filled', { filled, total })}</div></div>
-      <div><div class="k">${t('m.status')}</div><div class="v">${filled >= total && total > 0 ? t('m.waitlist') : t('m.open')}</div></div>
     </div>
     <form class="stack-form" id="applyForm">
       <label>${t('form.fullName')}<input type="text" id="appName" required placeholder="${t('form.yourName')}"></label>

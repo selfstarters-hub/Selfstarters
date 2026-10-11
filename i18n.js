@@ -20,7 +20,7 @@ const STR = {
     "meta.title": "Selfstarters — Find your team",
     "lang.aria": "Switch language",
 
-    "nav.goal": "Our goal", "nav.clubs": "Clubs", "nav.events": "Events", "nav.how": "How it works", "nav.social": "Social",
+    "nav.goal": "Our goal", "nav.clubs": "Clubs", "nav.events": "Events", "nav.how": "How it works",
     "nav.start": "Start a club", "nav.login": "Log in", "nav.logout": "Log out", "nav.admin": "Admin",
     "nav.profileAria": "Open your profile", "nav.myclubs": "My clubs",
 
@@ -28,22 +28,20 @@ const STR = {
     "hero.title": 'Find your<br>team.<span class="hl"> Not<br>just your<br>club.</span>',
     "hero.sub": "Selfstarters is where GDGSR Ben Guerir students go to see every team worth joining in one place — tech, math, chess, sports, and everything in between — and actually apply, not just wonder.",
     "hero.browse": "Browse open teams", "hero.seeEvents": "See upcoming events",
-    "hero.cardMeta": "{filled}/{total} filled",
-    "stat.teams": "Active teams", "stat.spots": "Open spots",
+    "stat.teams": "Active teams",
 
     "goal.title": "Our Goal",
     "goal.body": "Selfstarters is a community built for students who have ideas but lack the space to pursue them. Too often, students face a shortage of clubs, few chances to show what they can do, and limited access to the resources needed to turn an idea into something real. We started Selfstarters because we lived that problem ourselves, and instead of waiting for someone else to fix it, we decided to take action. Our goal is to give every student a place to start clubs, share their talents, and bring their ideas to life.",
     "goal.close": "Because great things begin when someone decides to start.",
 
     "clubs.title": "Every team,<br>one roster.",
-    "clubs.desc": "Filter by what you're into. Every card shows exactly how many spots are open, when they meet, and lets you apply on the spot.",
+    "clubs.desc": "Filter by what you're into. Every card shows when the team meets and lets you apply on the spot.",
     "clubs.empty": "No teams here yet.",
     "ticker.empty": "No teams listed yet — check back soon.",
     "filters.all": "All",
-    "card.meets": "MEETS", "card.tbd": "TBD", "card.full": "FULL — WAITLIST OPEN", "card.spots": "{n} SPOTS OPEN", "card.view": "View & apply",
+    "card.meets": "MEETS", "card.tbd": "TBD", "card.view": "View & apply",
 
-    "m.meets": "Meets", "m.location": "Location", "m.roster": "Roster", "m.status": "Status",
-    "m.filled": "{filled} / {total} filled", "m.waitlist": "Waitlist", "m.open": "Open",
+    "m.meets": "Meets", "m.location": "Location",
     "form.fullName": "Full name", "form.yourName": "Your name", "form.grade": "Grade", "form.selectGrade": "Select grade",
     "form.why": "Why do you want to join?", "form.whyPh": "A sentence or two is plenty.",
     "form.note": "Your application goes to the {club} lead and to the site admin.",
@@ -61,7 +59,7 @@ const STR = {
     "how.title": "How joining<br>actually works",
     "how.desc": "No mystery sign-up sheets taped to a door. Three steps, all online.",
     "s1.num": "01 / BROWSE", "s1.h": "Find a team that fits",
-    "s1.p": "Filter by category, check meeting times against your schedule, and see how many spots are actually left before you commit.",
+    "s1.p": "Filter by category and check meeting times against your schedule before you commit.",
     "s2.num": "02 / APPLY", "s2.h": "Tell them why you're in",
     "s2.p": "A short form goes straight to the club's student lead — your name, grade, and a couple sentences on why you want in.",
     "s3.num": "03 / SHOW UP", "s3.h": "Get confirmed & go",
@@ -88,8 +86,6 @@ const STR = {
     "ct.msg": "Message", "ct.ph": "Write your message...", "ct.send": "Send message",
     "ct.done": "Message sent", "ct.doneP": "Thanks — we'll get back to you by email.",
 
-    "soc.eyebrow": "Stay connected", "soc.title": "Follow us on Instagram",
-    "soc.p": "See updates, announcements, events, and what the Selfstarters community is building at GDGSR Ben Guerir.",
     "soc.aria": "Open GDGSR Clubs Instagram",
 
     "ft.about": "A student-built platform for finding, joining, and running clubs at GDGSR Ben Guerir. No teachers required to get started.",
@@ -118,7 +114,7 @@ const STR = {
     "meta.title": "Selfstarters — Trouve ton équipe",
     "lang.aria": "Changer de langue",
 
-    "nav.goal": "Notre objectif", "nav.clubs": "Clubs", "nav.events": "Événements", "nav.how": "Comment ça marche", "nav.social": "Réseaux",
+    "nav.goal": "Notre objectif", "nav.clubs": "Clubs", "nav.events": "Événements", "nav.how": "Comment ça marche",
     "nav.start": "Créer un club", "nav.login": "Se connecter", "nav.logout": "Se déconnecter", "nav.admin": "Admin",
     "nav.profileAria": "Ouvrir ton profil", "nav.myclubs": "Mes clubs",
 
@@ -126,22 +122,20 @@ const STR = {
     "hero.title": 'Trouve ton<br>équipe.<span class="hl"> Pas<br>seulement<br>un club.</span>',
     "hero.sub": "Sur Selfstarters, les élèves du GDGSR Ben Guerir découvrent au même endroit toutes les équipes qui valent le coup — technologie, maths, échecs, sport et tout ce qu'il y a entre les deux — et candidatent pour de bon, au lieu de rester dans le doute.",
     "hero.browse": "Voir les équipes ouvertes", "hero.seeEvents": "Voir les événements à venir",
-    "hero.cardMeta": "{filled}/{total} places occupées",
-    "stat.teams": "Équipes actives", "stat.spots": "Places disponibles",
+    "stat.teams": "Équipes actives",
 
     "goal.title": "Notre objectif",
     "goal.body": "Selfstarters est une communauté pensée pour les élèves qui ont des idées, mais pas l'espace pour les réaliser. Trop souvent, ils manquent de clubs, ont peu d'occasions de montrer ce dont ils sont capables et un accès limité aux ressources qui permettent de transformer une idée en projet concret. Nous avons créé Selfstarters parce que nous avons vécu ce problème nous-mêmes, et plutôt que d'attendre que quelqu'un d'autre le règle, nous avons décidé d'agir. Notre objectif : donner à chaque élève un endroit où créer des clubs, partager ses talents et faire vivre ses idées.",
     "goal.close": "Parce que les grandes choses commencent le jour où quelqu'un décide de se lancer.",
 
     "clubs.title": "Toutes les équipes,<br>une seule liste.",
-    "clubs.desc": "Filtre selon tes centres d'intérêt. Chaque carte indique combien de places restent, quand l'équipe se réunit, et te permet de postuler sur-le-champ.",
+    "clubs.desc": "Filtre selon tes centres d'intérêt. Chaque carte indique quand l'équipe se réunit et te permet de postuler sur-le-champ.",
     "clubs.empty": "Aucune équipe ici pour le moment.",
     "ticker.empty": "Aucune équipe pour l'instant — reviens bientôt.",
     "filters.all": "Tous",
-    "card.meets": "RÉUNION", "card.tbd": "À définir", "card.full": "COMPLET — LISTE D'ATTENTE OUVERTE", "card.spots": "{n} PLACES DISPONIBLES", "card.view": "Voir et postuler",
+    "card.meets": "RÉUNION", "card.tbd": "À définir", "card.view": "Voir et postuler",
 
-    "m.meets": "Réunions", "m.location": "Lieu", "m.roster": "Effectif", "m.status": "Statut",
-    "m.filled": "{filled} / {total} places occupées", "m.waitlist": "Liste d'attente", "m.open": "Ouvert",
+    "m.meets": "Réunions", "m.location": "Lieu",
     "form.fullName": "Nom complet", "form.yourName": "Ton nom", "form.grade": "Niveau", "form.selectGrade": "Choisis ton niveau",
     "form.why": "Pourquoi veux-tu rejoindre ce club ?", "form.whyPh": "Une ou deux phrases suffisent.",
     "form.note": "Ta candidature est envoyée au responsable de {club} et à l'administrateur du site.",
@@ -159,7 +153,7 @@ const STR = {
     "how.title": "Comment rejoindre<br>un club, concrètement",
     "how.desc": "Fini les feuilles d'inscription collées sur une porte. Trois étapes, tout en ligne.",
     "s1.num": "01 / EXPLORER", "s1.h": "Trouve l'équipe qui te correspond",
-    "s1.p": "Filtre par catégorie, compare les horaires de réunion avec ton emploi du temps et vois combien de places restent réellement avant de t'engager.",
+    "s1.p": "Filtre par catégorie et compare les horaires de réunion avec ton emploi du temps avant de t'engager.",
     "s2.num": "02 / POSTULER", "s2.h": "Dis-leur pourquoi tu veux en être",
     "s2.p": "Un court formulaire est envoyé directement au responsable élève du club : ton nom, ton niveau et quelques phrases pour expliquer ta motivation.",
     "s3.num": "03 / SE LANCER", "s3.h": "Reçois ta confirmation et c'est parti",
@@ -186,8 +180,6 @@ const STR = {
     "ct.msg": "Message", "ct.ph": "Écris ton message...", "ct.send": "Envoyer le message",
     "ct.done": "Message envoyé", "ct.doneP": "Merci — nous te répondrons par e-mail.",
 
-    "soc.eyebrow": "Restons en contact", "soc.title": "Suis-nous sur Instagram",
-    "soc.p": "Retrouve les actualités, les annonces, les événements et tout ce que la communauté Selfstarters construit au GDGSR Ben Guerir.",
     "soc.aria": "Ouvrir l'Instagram de GDGSR Clubs",
 
     "ft.about": "Une plateforme créée par des élèves pour trouver, rejoindre et gérer des clubs au GDGSR Ben Guerir. Pas besoin de professeur pour se lancer.",
